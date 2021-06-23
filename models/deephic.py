@@ -277,7 +277,7 @@ class Discriminator(nn.Module):
 # import functools
 # import torch.nn as nn
 #
-#
+# thejk
 # def default(m, scale=1.0):
 #     classname = m.__class__.__name__
 #     if classname.find("Conv") != -1:
