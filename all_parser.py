@@ -2,16 +2,17 @@ import os
 import argparse
 
 # the Root directory for all raw and processed data
-root_dir = '/Users/parkerhicks/Desktop/Datasets_NPZ/data/RaoHiC'
+root_dir = './Datasets_NPZ'
 
 res_map = {'5kb': 5_000, '10kb': 10_000, '25kb': 25_000, '50kb': 50_000, '100kb': 100_000, '250kb': 250_000,
            '500kb': 500_000, '1mb': 1_000_000}
 
 # 'train' and 'valid' can be changed for different train/valid set splitting
-set_dict = {'human': [3, 11, 19, 21],
-            'mouse': [3, 11, 19, 21],
-            'train': [1, 2, 4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22],
-            'valid': [5, 7, 13, 17]}
+set_dict = {'human_K562': [3, 11, 19, 21],
+            'mouse': (list(range(1, 22))) + ['X'],
+            'train': [1, 2, 5, 7, 8, 10, 12, 13, 16, 22],
+            'valid': [4, 14, 15, 17, 18, 20],
+            'human_GM12878_test': [3, 11, 19, 21]}
 
 help_opt = (('--help', '-h'), {
     'action': 'help',
@@ -87,7 +88,7 @@ def data_divider_parser():
     req_args.add_argument('-lrc', dest='lr_cutoff', help='REQUIRED: cutoff for low resolution maps[example:100]',
                           default=100, type=int, required=True)
     req_args.add_argument('-s', dest='dataset', help='REQUIRED: Dataset for train/valid/predict(all)',
-                          default='train', choices=['all', 'train', 'valid', 'human'], )
+                          default='train', choices=['human_K562', 'mouse', 'train', 'valid', 'human_GM12878_test'], )
     deephic_args = parser.add_argument_group('DeepHiC Arguments')
     deephic_args.add_argument('-chunk', dest='chunk', help='REQUIRED: chunk size for dividing[example:40]',
                               default=40, type=int, required=True)

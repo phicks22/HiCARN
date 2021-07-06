@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision.models.vgg import vgg16
 
+
 class GeneratorLoss(nn.Module):
     def __init__(self):
         super(GeneratorLoss, self).__init__()
@@ -23,7 +24,10 @@ class GeneratorLoss(nn.Module):
         # Image Loss
         image_loss = self.mse_loss(out_images, target_images)
         tv_loss = self.tv_loss(out_images)
-        return image_loss + 0.001 * adversarial_loss + 0.006 * perception_loss + 2e-8 * tv_loss
+        return image_loss + 2e-8 * tv_loss + 0.001 * perception_loss
+        
+#     0.006 * perception_loss
+
 
 class TVLoss(nn.Module):
     def __init__(self, tv_loss_weight=1):

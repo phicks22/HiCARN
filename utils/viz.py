@@ -6,8 +6,7 @@ import matplotlib.gridspec as gridspec
 from mpl_toolkits.mplot3d import Axes3D
 
 def heatmap(ax, mat, title=None, x_label=None, y_label=None, show_bar=True, close_ticks=False):
-    cmap = cm.Reds
-    cmap.set_bad(color='yellow')
+    cmap = "Reds"
     vmin, vmax = np.nanmin(mat), np.nanmax(mat) # get the max/min value and ignore nan
     im = ax.matshow(mat, interpolation='nearest', cmap=cmap, aspect='auto', vmin=vmin, vmax=vmax)
     if show_bar:
@@ -26,6 +25,7 @@ def heatmap(ax, mat, title=None, x_label=None, y_label=None, show_bar=True, clos
         ax.set_xlabel(x_label)
     if y_label is not None:
         ax.set_ylabel(y_label)
+
 
 def hic_heatmap(data, dediag=0, ncols=4, titles=None, x_labels=None, y_labels=None, file=None):
     if isinstance(data, list):

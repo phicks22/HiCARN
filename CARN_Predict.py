@@ -8,7 +8,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
 from scipy.sparse import coo_matrix
 
-import models.deephic as deephic
+import CARN as CARN
 
 from utils.io import spreadM, together
 
@@ -41,18 +41,19 @@ def filename_parser(filename):
     scale = 1 if info_str[3] == 'nonpool' else get_digit(info_str[3])
     return chunk, stride, bound, scale
 
+
 # Add resblock_num=res_num when running DeepHiC Generator
-def deephic_predictor(deephic_loader, ckpt_file, scale, res_num, device):
-    deepmodel = deephic.Generator(scale_factor=scale, num_channels=1).to(device)
+def deephic_predictor(carn_loader, ckpt_file, scale, res_num, device):
+    deepmodel = CARN.Generator(scale_factor=scale, num_channels=64).to(device)
     if not os.path.isfile(ckpt_file):
         ckpt_file = f'save/{ckpt_file}'
     deepmodel.load_state_dict(torch.load(ckpt_file))
-    print(f'Loading DeepHiC checkpoint file from "{ckpt_file}"')
+    print(f'Loading CARN checkpoint file from "{ckpt_file}"')
     result_data = []
     result_inds = []
     deepmodel.eval()
     with torch.no_grad():
-        for batch in tqdm(deephic_loader, desc='DeepHiC Predicting: '):
+        for batch in tqdm(carn_loader, desc='CARN Predicting: '):
             lr, inds = batch
             lr = lr.to(device)
             out = deepmodel(lr)
@@ -60,13 +61,13 @@ def deephic_predictor(deephic_loader, ckpt_file, scale, res_num, device):
             result_inds.append(inds.numpy())
     result_data = np.concatenate(result_data, axis=0)
     result_inds = np.concatenate(result_inds, axis=0)
-    deep_hics = together(result_data, result_inds, tag='Reconstructing: ')
-    return deep_hics
+    carn_hics = together(result_data, result_inds, tag='Reconstructing: ')
+    return carn_hics
 
 
-def save_data(deep_hic, compact, size, file):
-    deephic = spreadM(deep_hic, compact, size, convert_int=False, verbose=True)
-    np.savez_compressed(file, deephic=deephic, compact=compact)
+def save_data(carn, compact, size, file):
+    carn = spreadM(carn, compact, size, convert_int=False, verbose=True)
+    np.savez_compressed(file, deephic=carn, compact=compact)
     print('Saving file:', file)
 
 
@@ -99,16 +100,16 @@ if __name__ == '__main__':
 
     start = time.time()
     print(f'Loading data[HiCARN]: {HiCARN_file}')
-    deephic_data = np.load(os.path.join(in_dir, HiCARN_file), allow_pickle=True)
-    deephic_loader = dataloader(deephic_data)
+    carn_data = np.load(os.path.join(in_dir, HiCARN_file), allow_pickle=True)
+    carn_loader = dataloader(carn_data)
 
-    indices, compacts, sizes = data_info(deephic_data)
-    deep_hics = deephic_predictor(deephic_loader, ckpt_file, scale, res_num, device)
+    indices, compacts, sizes = data_info(carn_data)
+    carn_hics = deephic_predictor(carn_loader, ckpt_file, scale, res_num, device)
 
 
     def save_data_n(key):
         file = os.path.join(out_dir, f'predict_chr{key}_{low_res}.npz')
-        save_data(deep_hics[key], compacts[key], sizes[key], file)
+        save_data(carn_hics[key], compacts[key], sizes[key], file)
 
 
     pool = multiprocessing.Pool(processes=pool_num)

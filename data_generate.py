@@ -70,7 +70,7 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
     print(f'All DeepHiC data generated. Running cost is {(time.time()-start)/60:.1f} min.')
-
+    print(results)
     # return: n, div_dhic, div_hhic, div_inds, compact_idx, full_size
     data = np.concatenate([r.get()[1] for r in results])
     target = np.concatenate([r.get()[2] for r in results])
