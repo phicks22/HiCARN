@@ -283,19 +283,19 @@ from math import log10
 
 
 
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib.axes as axes
-import matplotlib.gridspec as gridspec
-from mpl_toolkits.mplot3d import Axes3D
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib.axes as axes
-import matplotlib.gridspec as gridspec
-from mpl_toolkits.mplot3d import Axes3D
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import matplotlib.cm as cm
+# import matplotlib.axes as axes
+# import matplotlib.gridspec as gridspec
+# from mpl_toolkits.mplot3d import Axes3D
+#
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import matplotlib.cm as cm
+# import matplotlib.axes as axes
+# import matplotlib.gridspec as gridspec
+# from mpl_toolkits.mplot3d import Axes3D
 
 
 def heatmap(ax, mat, title=None, x_label=None, y_label=None, show_bar=True, close_ticks=False):
