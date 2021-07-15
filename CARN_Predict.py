@@ -1,14 +1,13 @@
-import os, sys
+import sys
 import time
-import argparse
 import multiprocessing
 import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-from scipy.sparse import coo_matrix
-
-import CARN as CARN
+from utils.ssim import ssim
+from models import CARN as CARN
+from math import log10
 
 from utils.io import spreadM, together
 
@@ -17,8 +16,9 @@ from all_parser import *
 
 def dataloader(data, batch_size=64):
     inputs = torch.tensor(data['data'], dtype=torch.float)
+    target = torch.tensor(data['target'], dtype=torch.float)
     inds = torch.tensor(data['inds'], dtype=torch.long)
-    dataset = TensorDataset(inputs, inds)
+    dataset = TensorDataset(inputs, target, inds)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
     return loader
 
@@ -51,12 +51,27 @@ def deephic_predictor(carn_loader, ckpt_file, scale, res_num, device):
     print(f'Loading CARN checkpoint file from "{ckpt_file}"')
     result_data = []
     result_inds = []
+    test_metrics = {'g_loss': 0,
+                    'mse': 0, 'ssims': 0, 'psnr': 0, 'ssim': 0, 'nsamples': 0}
     deepmodel.eval()
     with torch.no_grad():
         for batch in tqdm(carn_loader, desc='CARN Predicting: '):
-            lr, inds = batch
+            lr, hr, inds = batch
+            batch_size = lr.size(0)
+            test_metrics['nsamples'] += batch_size
             lr = lr.to(device)
+            hr = hr.to(device)
             out = deepmodel(lr)
+
+            batch_mse = ((out - hr) ** 2).mean()
+            test_metrics['mse'] += batch_mse * batch_size
+            batch_ssim = ssim(out, hr)
+            test_metrics['ssims'] += batch_ssim * batch_size
+            test_metrics['psnr'] = 10 * log10(1 / (test_metrics['mse'] / test_metrics['nsamples']))
+            test_metrics['ssim'] = test_metrics['ssims'] / test_metrics['nsamples']
+            tqdm(carn_loader, desc='CARN Predicting: ').set_description(
+                desc=f"[Predicting in Test set] PSNR: {test_metrics['psnr']:.4f} dB SSIM: {test_metrics['ssim']:.4f}")
+
             result_data.append(out.to('cpu').numpy())
             result_inds.append(inds.numpy())
     result_data = np.concatenate(result_data, axis=0)

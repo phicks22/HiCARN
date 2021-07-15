@@ -12,7 +12,7 @@ set_dict = {'human_K562': [3, 11, 19, 21],
             'mouse': (list(range(1, 22))) + ['X'],
             'train': [1, 2, 5, 7, 8, 10, 12, 13, 16, 22],
             'valid': [4, 14, 15, 17, 18, 20],
-            'human_GM12878_test': [3, 11, 19, 21]}
+            'human_GM12878_test': [14]}
 
 help_opt = (('--help', '-h'), {
     'action': 'help',

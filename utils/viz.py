@@ -7,10 +7,11 @@ from mpl_toolkits.mplot3d import Axes3D
 
 def heatmap(ax, mat, title=None, x_label=None, y_label=None, show_bar=True, close_ticks=False):
     cmap = "Reds"
-    vmin, vmax = np.nanmin(mat), np.nanmax(mat) # get the max/min value and ignore nan
+    # vmin, vmax = np.nanmin(mat), np.nanmax(mat) # get the max/min value and ignore nan
+    vmin, vmax = 0, 0.1
     im = ax.matshow(mat, interpolation='nearest', cmap=cmap, aspect='auto', vmin=vmin, vmax=vmax)
     if show_bar:
-        cbar = plt.colorbar(im, ax=ax, aspect=9, shrink=0.3, ticks=[vmin,vmax])
+        cbar = plt.colorbar(im, ax=ax, aspect=9, shrink=0.3, ticks=[vmin, vmax])
         cbar.ax.yaxis.set_ticks_position('none')
         cbar.ax.set_yticklabels([])
         cbar.ax.set_xlabel('Low', fontsize='large')
@@ -26,12 +27,14 @@ def heatmap(ax, mat, title=None, x_label=None, y_label=None, show_bar=True, clos
     if y_label is not None:
         ax.set_ylabel(y_label)
 
+    return im
 
-def hic_heatmap(data, dediag=0, ncols=4, titles=None, x_labels=None, y_labels=None, file=None):
+
+def hic_heatmap(data, dediag=0, ncols=1, titles=None, x_labels=None, y_labels=None, file=None):
     if isinstance(data, list):
         axs = []
         nrows = int(len(data)//ncols+1)
-        figure = plt.figure(facecolor='w', figsize=(4.9*ncols,4*nrows))
+        figure = plt.figure(facecolor='w', figsize=(4.9*ncols, 4*nrows))
         gs = gridspec.GridSpec(nrows, ncols)
         for i, mat in enumerate(data):
             row, col = i // ncols, i % ncols
@@ -87,5 +90,45 @@ def hic_joint(mat, rep, distance=(2, 101), clear_max_min=False):
     g = sns.JointGrid(x='origin', y='replication', data=data)
     g = g.plot_joint(plt.scatter, s=40, edgecolor='white')
     g = g.plot_marginals(sns.distplot, kde=True)
-    g = g.annotate(stats.pearsonr)
+    # g = g.annotate(stats.pearsonr)
     return data
+
+import torch
+from torch.utils.data import TensorDataset, DataLoader
+from skimage.util import img_as_float
+
+# valid_file = '/Users/parkerhicks/Desktop/Datasets_NPZ/data/deephic_10kb40kb_c40_s40_b201_nonpool_valid.npz'
+# valid = np.load(valid_file)
+#
+# valid_data = torch.tensor(valid['data'], dtype=torch.float)
+# valid_target = torch.tensor(valid['target'], dtype=torch.float)
+# valid_inds = torch.tensor(valid['inds'], dtype=torch.long)
+#
+# valid_set = TensorDataset(valid_data, valid_target, valid_inds)
+#
+# valid_loader = DataLoader(valid_set, batch_size=100, shuffle=False, drop_last=True)
+
+# HR = np.load('./Datasets_NPZ/mat/K562/chr19_10kb.npz')
+# HR = np.array(HR['hic'])
+# LR = np.load('./Datasets_NPZ/mat/K562/chr19_40kb.npz')
+# LR = np.array(LR['hic'])
+
+CARN = np.load('./Datasets_NPZ/CARN_predict/Recent/K562/predict_chr11_40kb_40.npz')
+CARN = np.array(CARN['deephic'])
+deep = np.load('./Datasets_NPZ/DeepHiC_predict/server_predict_K562_chr11_40kb_40.npz')
+deep = np.array(deep['deephic'])
+# hicsr = np.load('./Datasets_NPZ/HiCSR_Predict/predict_chr4_40kb.npz')
+# hicsr = np.array(hicsr['deephic'])
+# CARN_deep = np.load('./Datasets_NPZ/CARN_Deep_Predict/Recent/Gm12878/predict_chr4_40kb_40.npz')
+# CARN_deep = np.array(CARN_deep['deephic'])
+PCARN = np.load('./Datasets_NPZ/PCARN_Predict/Recent/K562/predict_chr11_40kb_40.npz')
+PCARN = np.array(PCARN['deephic'])
+# real = np.load('./Datasets_NPZ/mat/GM12878/chr4_10kb.npz')
+# real = np.array(real['hic'])
+# real_max = np.max(real)
+# fake = real / 16
+
+data = [CARN[5500:6000, 5500:6000], deep[5500:6000, 5500:6000], PCARN[5500:6000, 5500:6000]]
+hic_heatmap(data, dediag=0, ncols=3)
+plt.show()
+
