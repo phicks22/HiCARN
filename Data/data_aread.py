@@ -1,11 +1,10 @@
-import os, sys
+import sys
 import time
-import argparse
 import multiprocessing
 import numpy as np
 
-from utils.io import readcoo2mat
-from all_parser import *
+from Utils.io import readcoo2mat
+from Data.all_parser import *
 
 def read_data(data_file, norm_file, out_dir, resolution):
     filename = os.path.basename(data_file).split('.')[0] + '.npz'

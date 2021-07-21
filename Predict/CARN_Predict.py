@@ -5,13 +5,13 @@ import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-from utils.ssim import ssim
-from models import CARN as CARN
+from Utils.ssim import ssim
+from Models import CARN as CARN
 from math import log10
 
-from utils.io import spreadM, together
+from Utils.io import spreadM, together
 
-from all_parser import *
+from Data.all_parser import *
 
 
 def dataloader(data, batch_size=64):
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     else:
         exit()
 
-    in_dir = os.path.join(root_dir, 'data')
+    in_dir = os.path.join(root_dir, '../data')
     out_dir = os.path.join(root_dir, 'predict', cell_line)
     mkdir(out_dir)
 

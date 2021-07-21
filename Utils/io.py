@@ -110,9 +110,10 @@ def divide(mat, chr_num, chunk_size=40, stride=28, bound=201, padding=True, spec
                 index.append((chr_num, size, i, j))
     result = np.array(result)
     if verbose: print(
-        f'[Chr{chr_str}] Deviding HiC matrix ({size}x{size}) into {len(result)} samples with chunk={chunk_size}, stride={stride}, bound={bound}')
+        f'[Chr{chr_str}] Deviding HiC matrix ({size}x{size}) into {len(result)} samples with chunk={chunk_size}, '
+        f'stride={stride}, bound={bound}')
     index = np.array(index)
-    return result, index
+    return result
 
 
 def together(matlist, indices, corp=0, species='hsa', tag='HiC'):
@@ -158,7 +159,7 @@ def pooling(mat, scale, pool_type='max', return_array=False, verbose=True):
     return out
 
 
-def dense2sparse(mat, key, chromosome, up_range, low_range):
+def dense2sparse(mat, key, low_range, up_range):
     """
     Convert npz file to sparse in format: chr1 bin1 chr2 bin2 value. Mat should be an npz file, the key is 'hicarn'
     for predicted images or 'hic' for real/downsampled images. Chromosome is an integer representing the chromosome of
@@ -185,9 +186,9 @@ def dense2sparse(mat, key, chromosome, up_range, low_range):
     for i in range(0, height):
         for j in range(0, width):
             value = z[i, j]
-            array = [chromosome, i + low_range, chromosome, j + low_range, value]
+            array = [(i + low_range), (j + low_range), value]
             final_list.append(array)
-
+    final_list = np.array(final_list)
     return final_list
 
 
@@ -200,7 +201,6 @@ def reference_regions(mat, key, chromosome, resolution):
 
     :returns: List of reference regions in [chromosome, bin start (base pairs), bin end (base pairs), bin number]
     """
-    chr_str = str(chromosome)
     x = np.load(mat)
     if key == "hic":
         y = np.array(x['hic'])
@@ -217,7 +217,7 @@ def reference_regions(mat, key, chromosome, resolution):
             count += (resolution)
             end = count
 
-            array = [f'chr{chr_str}', f'{start}', f'{end}', f'{start}']
+            array = [chromosome, start, end]
             final_dict[i] = array
 
         elif 0 < i < num_bins:
@@ -225,7 +225,7 @@ def reference_regions(mat, key, chromosome, resolution):
             count += resolution
             end = count
 
-            array = [f'chr{chr_str}', f'{start}', f'{end}', f'{start}']
+            array = [chromosome, start, end]
             final_dict[i] = array
 
         elif i == num_bins:
@@ -233,7 +233,7 @@ def reference_regions(mat, key, chromosome, resolution):
             count += (resolution)
             end = count
 
-            array = [f'chr{chr_str}', f'{start}', f'{end}', f'{start}']
+            array = [chromosome, start, end]
             final_dict[i] = array
 
     return final_dict
@@ -248,17 +248,33 @@ def get_region(region_dict, up_range, low_range):
     return final_list
 
 
-mat1 = '/Users/parkerhicks/Desktop/Datasets_NPZ/CARN_Predict/Recent/GM12878/predict_chr4_40kb_40_usethis.npz'
-mat = '/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr4_10kb.npz'
-# mat = np.load(mat)
-# mat = np.array(mat['hic'])[4000:4250, 4000:4250]
+mat1 = '/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/MAE_Loss/GM12878/predict_chr14_40kb.npz'
+# mat = '/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr14_10kb.npz'
+mat1 = np.load(mat1)['deephic']
+# mat = np.load(mat)['hic']
+mat = mat1[2250:2500, 2250:2500]
 
-sparse_mat = dense2sparse(mat1, key='deephic', chromosome=4, up_range=4250, low_range=4000)
+# sparse_mat = dense2sparse(mat1, key='deephic', chromosome=4, up_range=4500, low_range=4000)
 
-# ref_region = get_region(region_dict=(reference_regions(mat, key='hic', chromosome=4,
-#                                                        resolution=10)), up_range=4250, low_range=4000)
+# ref_region = get_region(region_dict=(reference_regions(mat1, key='deephic', chromosome=4,
+#                                                        resolution=10)), up_range=4500, low_range=4000)
 #
 # ref_region = reference_regions(mat, key='hic', chromosome=4, resolution=10)
 
-np.savetxt('Chr4.txt', X=sparse_mat, fmt='%i', delimiter='\t')
+# np.savetxt('GM12878_HiCARN_1_MAE_Loss_RefReg_Chr4_40Mb_45Mb.txt', X=ref_region, fmt="%i %i %i", delimiter='\t')
+# np.savetxt('GM12878_HiCARN_1_MAE_Loss_Chr4_40Mb_45Mb.txt', X=sparse_mat, fmt="%i %i %f", delimiter='\t')
 
+# subs = divide(mat, chr_num=4).tolist()
+
+
+# with open('GM12878_HiCARN_1_Chr14_22_5Mb_25Mb', 'w') as f:
+#     for item in subs:
+#         f.write("%s\n" % item)
+
+# np.savetxt("GM12878_HiCARN_1_Chr4_40x40_subs.txt", X=subs, fmt="%f", delimiter='\t')
+
+file = np.load("/Users/parkerhicks/Desktop/g_hicgan_GM12878_weights.npz", encoding="bytes", allow_pickle=True)
+
+file = file['params']
+
+print(file)

@@ -1,10 +1,9 @@
-import os, sys
+import sys
 import time
-import argparse
 import multiprocessing
 import numpy as np
-from utils.io import compactM, spreadM, downsampling
-from all_parser import *
+from Utils.io import downsampling
+from Data.all_parser import *
 
 def downsample(in_file, low_res, ratio):
     data = np.load(in_file)
@@ -15,6 +14,7 @@ def downsample(in_file, low_res, ratio):
     out_file = os.path.join(os.path.dirname(in_file), f'{chr_name}_{low_res}.npz')
     np.savez_compressed(out_file, hic=down_hic, compact=compact_idx, ratio=ratio)
     print('Saving file:', out_file)
+
 
 if __name__ == '__main__':
     args = data_down_parser().parse_args(sys.argv[1:])

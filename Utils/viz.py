@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 def heatmap(ax, mat, title=None, x_label=None, y_label=None, show_bar=True, close_ticks=False):
     cmap = "Reds"
     # vmin, vmax = np.nanmin(mat), np.nanmax(mat) # get the max/min value and ignore nan
-    vmin, vmax = 0, 0.1
+    vmin, vmax = 0, 1
     im = ax.matshow(mat, interpolation='nearest', cmap=cmap, aspect='auto', vmin=vmin, vmax=vmax)
     if show_bar:
         cbar = plt.colorbar(im, ax=ax, aspect=9, shrink=0.3, ticks=[vmin, vmax])
@@ -64,7 +64,6 @@ def surf(data):
     ax.plot_surface(x, y, data)
     
 import pandas as pd
-import seaborn as sns
 from scipy import stats
 import warnings
 warnings.filterwarnings("ignore")
@@ -76,27 +75,25 @@ def _clear_max_min(x, y):
     inter_idx = np.array(list(idx_setx.intersection(idx_sety)))
     return x[inter_idx], y[inter_idx]
 
-def hic_joint(mat, rep, distance=(2, 101), clear_max_min=False):
-    x, y = [], []
-    for i in range(*distance):
-        diagx, diagy = np.diag(mat, k=i), np.diag(rep, k=i)
-        x.append(diagx)
-        y.append(diagy)
-    x = np.concatenate(x)
-    y = np.concatenate(y)
-    if (clear_max_min):
-        x, y = _clear_max_min(x, y)
-    data = pd.DataFrame({'origin': x, 'replication': y})
-    g = sns.JointGrid(x='origin', y='replication', data=data)
-    g = g.plot_joint(plt.scatter, s=40, edgecolor='white')
-    g = g.plot_marginals(sns.distplot, kde=True)
-    # g = g.annotate(stats.pearsonr)
-    return data
+# def hic_joint(mat, rep, distance=(2, 101), clear_max_min=False):
+#     x, y = [], []
+#     for i in range(*distance):
+#         diagx, diagy = np.diag(mat, k=i), np.diag(rep, k=i)
+#         x.append(diagx)
+#         y.append(diagy)
+#     x = np.concatenate(x)
+#     y = np.concatenate(y)
+#     if (clear_max_min):
+#         x, y = _clear_max_min(x, y)
+#     data = pd.DataFrame({'origin': x, 'replication': y})
+#     g = sns.JointGrid(x='origin', y='replication', data=data)
+#     g = g.plot_joint(plt.scatter, s=40, edgecolor='white')
+#     g = g.plot_marginals(sns.distplot, kde=True)
+#     # g = g.annotate(stats.pearsonr)
+#     return data
 
 import torch
 from torch.utils.data import TensorDataset, DataLoader
-from skimage.util import img_as_float
-
 # valid_file = '/Users/parkerhicks/Desktop/Datasets_NPZ/data/deephic_10kb40kb_c40_s40_b201_nonpool_valid.npz'
 # valid = np.load(valid_file)
 #
@@ -113,22 +110,22 @@ from skimage.util import img_as_float
 # LR = np.load('./Datasets_NPZ/mat/K562/chr19_40kb.npz')
 # LR = np.array(LR['hic'])
 
-CARN = np.load('./Datasets_NPZ/CARN_predict/Recent/K562/predict_chr11_40kb_40.npz')
+CARN = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/MAE_Loss/GM12878/100ds/predict_chr4_40kb.npz')
 CARN = np.array(CARN['deephic'])
-deep = np.load('./Datasets_NPZ/DeepHiC_predict/server_predict_K562_chr11_40kb_40.npz')
+deep = np.load('./Datasets_NPZ/DeepHiC_predict/Recent/GM12878/predict_chr4_40kb100ds.npz')
 deep = np.array(deep['deephic'])
-# hicsr = np.load('./Datasets_NPZ/HiCSR_Predict/predict_chr4_40kb.npz')
+# hicsr = np.load('./Datasets_NPZ/HiCSR_Predict/predict_chr16_40kb.npz')
 # hicsr = np.array(hicsr['deephic'])
 # CARN_deep = np.load('./Datasets_NPZ/CARN_Deep_Predict/Recent/Gm12878/predict_chr4_40kb_40.npz')
 # CARN_deep = np.array(CARN_deep['deephic'])
-PCARN = np.load('./Datasets_NPZ/PCARN_Predict/Recent/K562/predict_chr11_40kb_40.npz')
-PCARN = np.array(PCARN['deephic'])
+# PCARN = np.load('./Datasets_NPZ/PCARN_Predict/Recent/K562/predict_chr11_40kb_40.npz')
+# PCARN = np.array(PCARN['deephic'])
 # real = np.load('./Datasets_NPZ/mat/GM12878/chr4_10kb.npz')
-# real = np.array(real['hic'])
-# real_max = np.max(real)
-# fake = real / 16
-
-data = [CARN[5500:6000, 5500:6000], deep[5500:6000, 5500:6000], PCARN[5500:6000, 5500:6000]]
-hic_heatmap(data, dediag=0, ncols=3)
+# real = np.array(real['hic'])[4000:4250, 4000:4250]
+# fake = real / 100
+data = [CARN[4000:4250, 4000:4250], deep[4000:4250, 4000:4250]]
+hic_heatmap(data, dediag=0, ncols=2)
 plt.show()
+
+
 

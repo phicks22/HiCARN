@@ -41,3 +41,18 @@ def diagcorr(mat1, mat2, rtype='pearson', max_shift=100, percentile=100, clearma
             r[s], p[s] = spearmanr(diag1, diag2)
 
     return r, p
+
+mat1 = '/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/MAE_Loss/GM12878/predict_chr14_40kb.npz'
+mat = '/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr14_10kb.npz'
+mat1 = (np.load(mat1)['deephic'])[2250:2500, 2250:2500]
+mat2 = (np.load(mat)['hic'])[2250:2500, 2250:2500]
+
+
+
+r_list = []
+for i in diagcorr(mat1, mat2):
+    r_list += i
+
+pcc = sum(r_list) / len(r_list)
+
+print(pcc)

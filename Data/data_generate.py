@@ -1,20 +1,18 @@
-import os, sys
+import sys
 import time
-import argparse
 import multiprocessing
-import torch
 import numpy as np
-from utils.io import compactM, divide, pooling
-from all_parser import *
+from Utils.io import compactM, divide, pooling
+from Data.all_parser import *
 
-def deephic_divider(n, high_file, down_file, scale=1, pool_type='max', chunk=40, stride=40, bound=201, lr_cutoff=100, hr_cutoff=255):
+def carn_divider(n, high_file, down_file, scale=1, pool_type='max', chunk=40, stride=40, bound=201, lr_cutoff=100, hr_cutoff=255):
     hic_data = np.load(high_file)
     down_data = np.load(down_file)
     compact_idx = hic_data['compact']
     full_size = hic_data['hic'].shape[0]
     # Compacting
     hic = compactM(hic_data['hic'], compact_idx)
-    down_hic = compactM(down_data['deephic'], compact_idx)
+    down_hic = compactM(down_data['hic'], compact_idx)
     # Clamping
     hic = np.minimum(hr_cutoff, hic)
     down_hic = np.minimum(lr_cutoff, down_hic)
@@ -53,20 +51,19 @@ if __name__ == '__main__':
 
     pool_num = 23 if multiprocessing.cpu_count() > 23 else multiprocessing.cpu_count()
 
-    hr_data_dir = os.path.join(root_dir, 'mat', cell_line)
-    sr_data_dir = os.path.join(root_dir, 'CARN_Predict', 'GM12878_1')
+    data_dir = os.path.join(root_dir, 'mat', cell_line)
     out_dir = os.path.join(root_dir, 'data')
     mkdir(out_dir)
 
     start = time.time()
     pool = multiprocessing.Pool(processes=pool_num)
-    print(f'Start a multiprocess pool with processes = {pool_num} for generating DeepHiC data')
+    print(f'Start a multiprocess pool with processes = {pool_num} for generating HiCARN data')
     results = []
     for n in chr_list:
-        high_file = os.path.join(hr_data_dir, f'chr{n}_{high_res}.npz')
-        sr_file = os.path.join(sr_data_dir, f'predict_chr{n}_{low_res}.npz')
+        high_file = os.path.join(data_dir, f'chr{n}_{high_res}.npz')
+        down_file = os.path.join(data_dir, f'chr{n}_{low_res}.npz')
         kwargs = {'scale':scale, 'pool_type':pool_type, 'chunk':chunk, 'stride':stride, 'bound':bound, 'lr_cutoff': lr_cutoff}
-        res = pool.apply_async(deephic_divider, (n, high_file, sr_file,), kwargs)
+        res = pool.apply_async(carn_divider, (n, high_file, down_file,), kwargs)
         results.append(res)
     pool.close()
     pool.join()
@@ -79,7 +76,7 @@ if __name__ == '__main__':
     compacts = {r.get()[0]: r.get()[4] for r in results}
     sizes = {r.get()[0]: r.get()[5] for r in results}
 
-    filename = f'deephic_{high_res}{low_res}_c{chunk}_s{stride}_b{bound}_{pool_str}_{postfix}_CARN_Chr14_40.npz'
+    filename = f'hicarn_{high_res}{low_res}_c{chunk}_s{stride}_b{bound}_{pool_str}_{postfix}.npz'
     deephic_file = os.path.join(out_dir, filename)
     np.savez_compressed(deephic_file, data=data, target=target, inds=inds, compacts=compacts, sizes=sizes)
     print('Saving file:', deephic_file)

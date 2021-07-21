@@ -1,20 +1,13 @@
 import sys
-import time
-import multiprocessing
 import numpy as np
-import torch
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-import models.deephic as deephic
 from math import log10
 from math import exp
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.io import spreadM, together
-
-from all_parser import *
+from Data.all_parser import *
 
 
 ############### SSIM ###############
