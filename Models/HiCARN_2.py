@@ -70,11 +70,10 @@ class Cascading_Block(nn.Module):
 
         return o3
 
-# CARN Generator
-class Generator(nn.Module):
-    def __init__(self, scale_factor, num_channels):
-        super().__init__()
 
+class Generator(nn.Module):
+    def __init__(self, num_channels):
+        super().__init__()
 
         # Entry 3x3 convolution layer
         self.entry = nn.Conv2d(1, num_channels, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
@@ -114,6 +113,7 @@ class Generator(nn.Module):
         out = self.exit(o3)
         return out
 
+
 # PCARN Discriminator
 class Discriminator(nn.Module):
     def __init__(self, downsample=1):
@@ -150,57 +150,3 @@ class Discriminator(nn.Module):
 
         out = self.body(x)
         return out
-        
-        
-# import math
-# import torch
-# import torch.nn as nn
-# from torch.functional import F
-#
-#
-# import math
-# import functools
-# import torch.nn as nn
-#
-#
-# def default(m, scale=1.0):
-#     classname = m.__class__.__name__
-#     if classname.find("Conv") != -1:
-#         if m.weight.requires_grad:
-#             nn.init.kaiming_uniform_(m.weight.data, a=math.sqrt(5))
-#             m.weight.data *= scale
-#         if m.bias is not None and m.bias.requires_grad:
-#             m.bias.data.zero_()
-#
-#
-# def msra_uniform(m, scale=1.0):
-#     classname = m.__class__.__name__
-#     if classname.find("Conv") != -1:
-#         if m.weight.requires_grad:
-#             nn.init.kaiming_uniform_(m.weight.data, a=0)
-#             m.weight.data *= scale
-#         if m.bias is not None and m.bias.requires_grad:
-#             m.bias.data.zero_()
-#
-#
-# def msra_normal(m, scale=1.0):
-#     classname = m.__class__.__name__
-#     if classname.find("Conv") != -1:
-#         if m.weight.requires_grad:
-#             nn.init.kaiming_normal_(m.weight.data, a=0)
-#             m.weight.data *= scale
-#         if m.bias is not None and m.bias.requires_grad:
-#             m.bias.data.zero_()
-#
-#
-# def init_weights(net, init_type, scale=1.0):
-#     if init_type == "default":
-#         _init = functools.partial(default, scale=scale)
-#     elif init_type == "msra_uniform":
-#         _init = functools.partial(msra_uniform, scale=scale)
-#     elif init_type == "msra_normal":
-#         _init = functools.partial(msra_normal, scale=scale)
-#     else:
-#         raise NotImplementedError
-#
-#     net.apply(_init)

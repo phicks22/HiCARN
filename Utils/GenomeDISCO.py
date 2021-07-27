@@ -2,11 +2,8 @@ import gzip
 import numpy as np
 import copy
 from sklearn import metrics
-from time import strftime
 import scipy.sparse as sps
 
-
-# from statsmodels import robust
 
 def to_transition(mtogether):
     sums = mtogether.sum(axis=1)
@@ -33,7 +30,6 @@ def write_diff_vector_bedfile(diff_vector, nodes, nodes_idx, out_filename):
 
 
 def compute_reproducibility(m1_csr, m2_csr, transition, tmax=3, tmin=3):
-
     # make symmetric
     m1up = m1_csr
     m1down = m1up.transpose()
@@ -74,17 +70,18 @@ def compute_reproducibility(m1_csr, m2_csr, transition, tmax=3, tmin=3):
                 diff = abs(rw1 - rw2).sum()  # +euclidean(rw1.toarray().flatten(),rw2.toarray().flatten()))
                 scores.append(1.0 * float(diff) / float(nonzero_total))
                 extra_text = ' | score=' + str('{:.3f}'.format(1.0 - float(diff) / float(nonzero_total)))
-            print('GenomeDISCO | ' + strftime("%c") + ' | done t=' + str(t) + extra_text)
+    #             print('GenomeDISCO | ' + strftime("%c") + ' | done t=' + str(t) + extra_text)
 
     # compute final score
     ts = range(tmin, tmax + 1)
     denom = len(ts) - 1
     if tmin == tmax:
         auc = scores[0]
+
         if 2 < auc:
             auc = 2
 
-        elif 0 <= auc <=2:
+        elif 0 <= auc <= 2:
             auc = auc
 
     else:
@@ -110,6 +107,6 @@ def compute_reproducibility(m1_csr, m2_csr, transition, tmax=3, tmin=3):
 #
 # print(compute_reproducibility(carn, real, transition=True))
 
-mat = np.random.randn(28, 28)
-mat2 = mat.resize((40, 40))
-print(mat2)
+# mat = np.random.randn(28, 28)
+# mat2 = mat.resize((40, 40))
+# print(mat2)

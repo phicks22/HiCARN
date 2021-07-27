@@ -4,7 +4,8 @@ import multiprocessing
 import numpy as np
 
 from Utils.io import readcoo2mat
-from Data.all_parser import *
+from Data.Arg_Parser import *
+
 
 def read_data(data_file, norm_file, out_dir, resolution):
     filename = os.path.basename(data_file).split('.')[0] + '.npz'
@@ -15,6 +16,7 @@ def read_data(data_file, norm_file, out_dir, resolution):
         print(f'Abnormal file: {norm_file}')
     np.savez_compressed(out_file, hic=HiC, compact=idx)
     print('Saving file:', out_file)
+
 
 if __name__ == '__main__':
     args = data_read_parser().parse_args(sys.argv[1:])

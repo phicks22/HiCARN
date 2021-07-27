@@ -1,10 +1,8 @@
-import os
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
 from scipy.sparse import coo_matrix
-import gzip
 
 except_chr = {'hsa': {'X': 23, 23: 'X'}, 'mouse': {'X': 20, 20: 'X'}}
 

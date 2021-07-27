@@ -77,7 +77,7 @@ class Cascading_Block(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, scale_factor, num_channels):
+    def __init__(self, num_channels):
         super().__init__()
 
         #self.sub_mean = Ops.MeanShift((0.4488, 0.4371, 0.4040), sub=True)

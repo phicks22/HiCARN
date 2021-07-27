@@ -11,17 +11,17 @@ class GeneratorLoss(nn.Module):
         for param in loss_network.parameters():
             param.requires_grad = False
         self.loss_network = loss_network
-        self.mae_loss = nn.L1Loss()
+        self.mse_loss = nn.MSELoss()
         self.tv_loss = TVLoss()
 
     def forward(self, out_images, target_images):
         # Perception Loss
         out_feat = self.loss_network(out_images.repeat([1, 3, 1, 1]))
         target_feat = self.loss_network(target_images.repeat([1, 3, 1, 1]))
-        perception_loss = self.mae_loss(out_feat.reshape(out_feat.size(0), -1),
+        perception_loss = self.mse_loss(out_feat.reshape(out_feat.size(0), -1),
                                         target_feat.reshape(target_feat.size(0), -1))
         # Image Loss
-        image_loss = self.mae_loss(out_images, target_images)
+        image_loss = self.mse_loss(out_images, target_images)
         tv_loss = self.tv_loss(out_images)
         return image_loss + 0.001 * perception_loss + 2e-8 * tv_loss
 

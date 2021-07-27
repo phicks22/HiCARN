@@ -2,17 +2,17 @@ import os
 import argparse
 
 # the Root directory for all raw and processed data
-root_dir = './Datasets_NPZ'
+root_dir = './Datasets_NPZ'  # Example of root directory name
 
 res_map = {'5kb': 5_000, '10kb': 10_000, '25kb': 25_000, '50kb': 50_000, '100kb': 100_000, '250kb': 250_000,
            '500kb': 500_000, '1mb': 1_000_000}
 
 # 'train' and 'valid' can be changed for different train/valid set splitting
 set_dict = {'human_K562': [3, 11, 19, 21],
-            'mouse': (list(range(1, 22))) + ['X'],
-            'train': [1, 2, 5, 7, 8, 10, 12, 13, 16, 22],
-            'valid': [4, 14, 15, 17, 18, 20],
-            'human_GM12878_test': [14]}
+            'mouse': (4, 9, 15, 18),
+            'train': [1, 3, 5, 7, 8, 9, 11, 13, 15, 17, 18, 19, 21, 22],
+            'valid': [2, 6, 10, 12],
+            'human_GM12878_test': (4, 14, 16, 20)}
 
 help_opt = (('--help', '-h'), {
     'action': 'help',

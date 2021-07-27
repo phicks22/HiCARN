@@ -1,15 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib.axes as axes
 import matplotlib.gridspec as gridspec
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def heatmap(ax, mat, title=None, x_label=None, y_label=None, show_bar=True, close_ticks=False):
     cmap = "Reds"
-    # vmin, vmax = np.nanmin(mat), np.nanmax(mat) # get the max/min value and ignore nan
-    vmin, vmax = 0, 0.5
+    vmin, vmax = 0, 1.0
     im = ax.matshow(mat, interpolation='nearest', cmap=cmap, aspect='auto', vmin=vmin, vmax=vmax)
     if show_bar:
         cbar = plt.colorbar(im, ax=ax, aspect=9, shrink=0.3, ticks=[vmin, vmax])
@@ -97,77 +93,7 @@ fake = real / 16
 # plt.show()
 # hicnn = hicnn
 
-except_chr = {'hsa': {'X': 23, 23: 'X'}, 'mouse': {'X': 20, 20: 'X'}}
 
-
-def divide(mat, chr_num, chunk_size=40, stride=28, bound=201, padding=True, species='hsa', verbose=False):
-    chr_str = str(chr_num)
-    if isinstance(chr_num, str): chr_num = except_chr[species][chr_num]
-    result = []
-    index = []
-    size = mat.shape[0] // 2
-    if (stride < chunk_size and padding):
-        pad_len = (chunk_size - stride) // 2
-        mat = np.pad(mat, ((pad_len, pad_len), (pad_len, pad_len)), 'constant')
-    # mat's shape changed, update!
-    height, width = mat.shape
-    assert height == width, 'Now, we just assumed matrix is squared!'
-    for i in range(0, height // 2, stride):
-        for j in range(0, width // 2, stride):
-            if abs(i - j) <= bound and i + chunk_size < height and j + chunk_size < width:
-                subImage = mat[i:i + chunk_size, j:j + chunk_size]
-                result.append([subImage])
-                index.append((chr_num, size, i, j))
-    result = np.array(result)
-    if verbose: print(
-        f'[Chr{chr_str}] Deviding HiC matrix ({size}x{size}) into {len(result)} samples with chunk={chunk_size}, '
-        f'stride={stride}, bound={bound}')
-    index = np.array(index)
-    return result, index
-
-
-def together(matlist, indices, corp=0, species='hsa', tag='HiC'):
-    chr_nums = sorted(list(np.unique(indices[:, 0])))
-    # convert last element to str 'X'
-    if chr_nums[-1] in except_chr[species]: chr_nums[-1] = except_chr[species][chr_nums[-1]]
-    print(f'{tag} data contain {chr_nums} chromosomes')
-    _, h, w = matlist[0].shape
-    results = dict.fromkeys(chr_nums)
-    for n in chr_nums:
-        # convert str 'X' to 23
-        num = except_chr[species][n] if isinstance(n, str) else n
-        loci = np.where(indices[:, 0] == num)[0]
-        sub_mats = matlist[loci]
-        index = indices[loci]
-        width = index[0, 1]
-        full_mat = np.zeros((width, width))
-        for sub, pos in zip(sub_mats, index):
-            i, j = pos[-2], pos[-1]
-            if corp > 0:
-                sub = sub[:, corp:-corp, corp:-corp]
-                _, h, w = sub.shape
-            full_mat[i:i + h, j:j + w] = sub
-        results[n] = full_mat
-    return results
-
-
-# divided = divide(hicnn, chr_num=4, chunk_size=28, stride=34, bound=201, padding=True)
-# mat = together(divided[0], divided[1])
-
-# num_bins = np.ceil(191154276 / 40000).astype('int')
-# mat = np.zeros((num_bins, num_bins))
-# for i in range(divided.shape[0]):
-#     # r1 = divided[i, 0]
-#     # c1 = divided[i, 1]
-#     r1 = 28
-#     c1 = 28
-#     r2 = r1 + 27 + 1
-#     c2 = c1 + 27 + 1
-#     mat[r1:r2, c1:c2] = divided[i, :, :]
-#
-# # copy upper triangle to lower triangle
-# lower_index = np.tril_indices(num_bins, -1)
-# mat[lower_index] = mat.T[lower_index]
 data = [CARN, real, hicnn, deep]
 hic_heatmap(data, dediag=0, ncols=2)
 plt.show()

@@ -3,7 +3,8 @@ import time
 import multiprocessing
 import numpy as np
 from Utils.io import compactM, divide, pooling
-from Data.all_parser import *
+from Data.Arg_Parser import *
+
 
 def carn_divider(n, high_file, down_file, scale=1, pool_type='max', chunk=40, stride=40, bound=201, lr_cutoff=100, hr_cutoff=255):
     hic_data = np.load(high_file)
@@ -25,16 +26,13 @@ def carn_divider(n, high_file, down_file, scale=1, pool_type='max', chunk=40, st
     div_hhic, _ = divide(hic, n, chunk, stride, bound, verbose=True)
     return n, div_dhic, div_hhic, div_inds, compact_idx, full_size
 
+
 if __name__ == '__main__':
     args = data_divider_parser().parse_args(sys.argv[1:])
 
     cell_line = args.cell_line
     high_res = args.high_res
     low_res = args.low_res
-    # Note: cutoff for low-sequencing data differ according to the count values' distribution
-    # we recommand a value smaller than the 99.5 percentile
-    # For Rao's Hi-C, we used 100 for 1/16 downsampled data, 80 for 1/25 downsampled data,
-    # 50 for 1/50 downsampled data and 25 for 1/100 downsampled data.
     lr_cutoff = args.lr_cutoff
     dataset = args.dataset
 
@@ -67,7 +65,7 @@ if __name__ == '__main__':
         results.append(res)
     pool.close()
     pool.join()
-    print(f'All DeepHiC data generated. Running cost is {(time.time()-start)/60:.1f} min.')
+    print(f'All HiCARN data generated. Running cost is {(time.time()-start)/60:.1f} min.')
     print(results)
     # return: n, div_dhic, div_hhic, div_inds, compact_idx, full_size
     data = np.concatenate([r.get()[1] for r in results])
@@ -77,6 +75,6 @@ if __name__ == '__main__':
     sizes = {r.get()[0]: r.get()[5] for r in results}
 
     filename = f'hicarn_{high_res}{low_res}_c{chunk}_s{stride}_b{bound}_{pool_str}_{postfix}.npz'
-    deephic_file = os.path.join(out_dir, filename)
-    np.savez_compressed(deephic_file, data=data, target=target, inds=inds, compacts=compacts, sizes=sizes)
-    print('Saving file:', deephic_file)
+    hicarn_file = os.path.join(out_dir, filename)
+    np.savez_compressed(hicarn_file, data=data, target=target, inds=inds, compacts=compacts, sizes=sizes)
+    print('Saving file:', hicarn_file)
