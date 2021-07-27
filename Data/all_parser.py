@@ -108,10 +108,12 @@ def data_divider_parser():
 def data_predict_parser():
     parser = argparse.ArgumentParser(description='Predict data using DeepHiC model', add_help=False)
     req_args = parser.add_argument_group('Required Arguments')
-    req_args.add_argument('-c', dest='cell_line', help='REQUIRED: Cell line for analysis[example:GM12878]',
+    req_args.add_argument('-c', dest='cell_line', help='REQUIRED: Cell line for analysis[example: GM12878]',
                           required=True)
-    req_args.add_argument('-lr', dest='low_res', help='REQUIRED: Low resolution specified[example:40kb]',
+    req_args.add_argument('-lr', dest='low_res', help='REQUIRED: Low resolution specified[example: 40kb]',
                           default='40kb', required=True)
+    req_args.add_argument('-f', dest='file_name', help='REQUIRED: Matrix file to be enhanced[example: '
+                                                       'hicarn_10kb40kb_c40_s40_b201_nonpool_human_GM12878_test.npz')
     gan_args = parser.add_argument_group('GAN model Arguments')
     gan_args.add_argument('-ckpt', dest='checkpoint', help='REQUIRED: Checkpoint file of DeepHiC model',
                           required=True)

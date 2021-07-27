@@ -8,8 +8,8 @@ import torch
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 
-from Models.PCARN import Generator, Discriminator
-from Models.loss import GeneratorLoss
+from Models.HiCARN_2 import Generator, Discriminator
+from Models.HiCARN_2_Loss import GeneratorLoss
 from Utils.ssim import ssim
 from math import log10
 

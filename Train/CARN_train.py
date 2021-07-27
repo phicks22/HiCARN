@@ -8,8 +8,8 @@ import torch
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 
-from Models.deephic import Generator
-from Models.CARN_loss import GeneratorLoss
+from Models.DeepHiC import Generator
+from Models.HiCARN_1_Loss import GeneratorLoss
 from Utils.ssim import ssim
 from math import log10
 

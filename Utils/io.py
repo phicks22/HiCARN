@@ -113,7 +113,7 @@ def divide(mat, chr_num, chunk_size=40, stride=28, bound=201, padding=True, spec
         f'[Chr{chr_str}] Deviding HiC matrix ({size}x{size}) into {len(result)} samples with chunk={chunk_size}, '
         f'stride={stride}, bound={bound}')
     index = np.array(index)
-    return result
+    return result, index
 
 
 def together(matlist, indices, corp=0, species='hsa', tag='HiC'):
@@ -272,9 +272,3 @@ mat = mat1[2250:2500, 2250:2500]
 #         f.write("%s\n" % item)
 
 # np.savetxt("GM12878_HiCARN_1_Chr4_40x40_subs.txt", X=subs, fmt="%f", delimiter='\t')
-
-file = np.load("/Users/parkerhicks/Desktop/g_hicgan_GM12878_weights.npz", encoding="bytes", allow_pickle=True)
-
-file = file['params']
-
-print(file)
