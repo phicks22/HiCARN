@@ -1,6 +1,5 @@
 ## File Contents:
 
-_______________
 
 The training file contains chromosomes 1, 3, 5, 7, 8, 9, 11, 13, 15, 17, 18, 19, 21, and 22 from the GM12878 cell line.
 
