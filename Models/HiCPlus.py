@@ -1,5 +1,7 @@
+# Code was taken from https://github.com/wangjuan001/hicplus
 import torch.nn as nn
 import torch.nn.functional as F
+
 conv2d1_filters_numbers = 8
 conv2d1_filters_size = 9
 conv2d2_filters_numbers = 8

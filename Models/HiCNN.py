@@ -1,3 +1,4 @@
+# Code was taken from http://dna.cs.miami.edu/HiCNN2/
 import torch
 import torch.nn as nn
 

@@ -1,3 +1,4 @@
+# Code was taken from https://github.com/omegahh/DeepHiC
 import torch
 import torch.nn as nn
 
