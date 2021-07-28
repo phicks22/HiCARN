@@ -5,6 +5,8 @@ import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
 import Models.HiCSR as hicsr
+import Models.HiCNN as hicnn
+import Models.HiCPlus as hicplus
 from math import log10
 import torch
 import torch.nn.functional as F
@@ -51,8 +53,8 @@ def filename_parser(filename):
     return chunk, stride, bound, scale
 
 
-def hicarn_predictor(deephic_loader, ckpt_file, device):
-    model = hicsr.Generator().to(device)
+def hicarn_predictor(model, deephic_loader, ckpt_file, device):
+    model = model.Generator().to(device)
     if not os.path.isfile(ckpt_file):
         ckpt_file = f'save/{ckpt_file}'
     model.load_state_dict(torch.load(ckpt_file))
@@ -127,6 +129,7 @@ if __name__ == '__main__':
     ckpt_file = args.checkpoint
     res_num = args.resblock
     cuda = args.cuda
+    model = args.model
     print('WARNING: Prediction process requires a large memory. Ensure that your machine has ~150G of memory.')
     if multiprocessing.cpu_count() > 23:
         pool_num = 23
@@ -152,7 +155,7 @@ if __name__ == '__main__':
     hicarn_loader = dataloader(hicarn_data)
 
     indices, compacts, sizes = data_info(hicarn_data)
-    hicarn_hics = hicarn_predictor(hicarn_loader, ckpt_file, device)
+    hicarn_hics = hicarn_predictor(model, hicarn_loader, ckpt_file, device)
 
 
     def save_data_n(key):

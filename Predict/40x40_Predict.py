@@ -4,7 +4,9 @@ import multiprocessing
 import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-import Models.HiCARN_1 as hicarn
+import Models.HiCARN_1 as hicarn_1
+import Models.HiCARN_2 as hicarn_2
+import Models.DeepHiC as deephic
 from math import log10
 import torch
 from Utils.SSIM import ssim
@@ -41,8 +43,8 @@ def filename_parser(filename):
     return chunk, stride, bound, scale
 
 
-def hicarn_predictor(hicarn_loader, ckpt_file, device):
-    deepmodel = hicarn.Generator(num_channels=64).to(device)
+def hicarn_predictor(model, hicarn_loader, ckpt_file, device):
+    deepmodel = model.Generator(num_channels=64).to(device)
     if not os.path.isfile(ckpt_file):
         ckpt_file = f'save/{ckpt_file}'
     deepmodel.load_state_dict(torch.load(ckpt_file))
@@ -124,6 +126,7 @@ if __name__ == '__main__':
     ckpt_file = args.checkpoint
     res_num = args.resblock
     cuda = args.cuda
+    model = args.model
     print('WARNING: Predict process requires large memory, thus ensure that your machine has ~150G memory.')
     if multiprocessing.cpu_count() > 23:
         pool_num = 23
@@ -145,16 +148,16 @@ if __name__ == '__main__':
 
     start = time.time()
     print(f'Loading data[HiCARN]: {HiCARN_file}')
-    carn_data = np.load(os.path.join(in_dir, HiCARN_file), allow_pickle=True)
-    carn_loader = dataloader(carn_data)
+    hicarn_data = np.load(os.path.join(in_dir, HiCARN_file), allow_pickle=True)
+    hicarn_loader = dataloader(hicarn_data)
 
-    indices, compacts, sizes = data_info(carn_data)
-    carn_hics = hicarn_predictor(carn_loader, ckpt_file, device)
+    indices, compacts, sizes = data_info(hicarn_data)
+    hicarn_hics = hicarn_predictor(model, hicarn_loader, ckpt_file, device)
 
 
     def save_data_n(key):
         file = os.path.join(out_dir, f'predict_chr{key}_{low_res}.npz')
-        save_data(carn_hics[key], compacts[key], sizes[key], file)
+        save_data(hicarn_hics[key], compacts[key], sizes[key], file)
 
 
     pool = multiprocessing.Pool(processes=pool_num)

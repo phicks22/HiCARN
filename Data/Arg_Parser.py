@@ -8,11 +8,11 @@ res_map = {'5kb': 5_000, '10kb': 10_000, '25kb': 25_000, '50kb': 50_000, '100kb'
            '500kb': 500_000, '1mb': 1_000_000}
 
 # 'train' and 'valid' can be changed for different train/valid set splitting
-set_dict = {'human_K562': [3, 11, 19, 21],
-            'mouse': (4, 9, 15, 18),
+set_dict = {'K562_test': [3, 11, 19, 21],
+            'mESC_test': (4, 9, 15, 18),
             'train': [1, 3, 5, 7, 8, 9, 11, 13, 15, 17, 18, 19, 21, 22],
             'valid': [2, 6, 10, 12],
-            'human_GM12878_test': (4, 14, 16, 20)}
+            'GM12878_test': (4, 14, 16, 20)}
 
 help_opt = (('--help', '-h'), {
     'action': 'help',
@@ -88,17 +88,17 @@ def data_divider_parser():
     req_args.add_argument('-lrc', dest='lr_cutoff', help='REQUIRED: cutoff for low resolution maps[example:100]',
                           default=100, type=int, required=True)
     req_args.add_argument('-s', dest='dataset', help='REQUIRED: Dataset for train/valid/predict(all)',
-                          default='train', choices=['human_K562', 'mouse', 'train', 'valid', 'human_GM12878_test'], )
-    deephic_args = parser.add_argument_group('DeepHiC Arguments')
-    deephic_args.add_argument('-chunk', dest='chunk', help='REQUIRED: chunk size for dividing[example:40]',
+                          default='train', choices=['K562_test', 'mESC_test', 'train', 'valid', 'GM12878_test'], )
+    hicarn_args = parser.add_argument_group('HiCARN Arguments')
+    hicarn_args.add_argument('-chunk', dest='chunk', help='REQUIRED: chunk size for dividing[example:40]',
                               default=40, type=int, required=True)
-    deephic_args.add_argument('-stride', dest='stride', help='REQUIRED: stride for dividing[example:40]',
+    hicarn_args.add_argument('-stride', dest='stride', help='REQUIRED: stride for dividing[example:40]',
                               default=40, type=int, required=True)
-    deephic_args.add_argument('-bound', dest='bound', help='REQUIRED: distance boundary interested[example:201]',
+    hicarn_args.add_argument('-bound', dest='bound', help='REQUIRED: distance boundary interested[example:201]',
                               default=201, type=int, required=True)
-    deephic_args.add_argument('-scale', dest='scale', help='REQUIRED: Downpooling scale[example:1]',
+    hicarn_args.add_argument('-scale', dest='scale', help='REQUIRED: Downpooling scale[example:1]',
                               type=int, required=True)
-    deephic_args.add_argument('-type', dest='pool_type', help='OPTIONAL: Downpooling type[default:max]',
+    hicarn_args.add_argument('-type', dest='pool_type', help='OPTIONAL: Downpooling type[default:max]',
                               default='max', choices=['max', 'avg'])
     parser.add_argument(*help_opt[0], **help_opt[1])
 
@@ -106,7 +106,7 @@ def data_divider_parser():
 
 
 def data_predict_parser():
-    parser = argparse.ArgumentParser(description='Predict data using DeepHiC model', add_help=False)
+    parser = argparse.ArgumentParser(description='Predict data using HiCARN model', add_help=False)
     req_args = parser.add_argument_group('Required Arguments')
     req_args.add_argument('-c', dest='cell_line', help='REQUIRED: Cell line for analysis[example: GM12878]',
                           required=True)
@@ -114,12 +114,10 @@ def data_predict_parser():
                           default='40kb', required=True)
     req_args.add_argument('-f', dest='file_name', help='REQUIRED: Matrix file to be enhanced[example: '
                                                        'hicarn_10kb40kb_c40_s40_b201_nonpool_human_GM12878_test.npz')
+    req_args.add_argument('m', dest='model', help='REQUIRED: Choose your model[example: HiCARN_1]', required=True)
     gan_args = parser.add_argument_group('GAN model Arguments')
-    gan_args.add_argument('-ckpt', dest='checkpoint', help='REQUIRED: Checkpoint file of DeepHiC model',
+    gan_args.add_argument('-ckpt', dest='checkpoint', help='REQUIRED: Checkpoint file of HiCARN model',
                           required=True)
-    gan_args.add_argument('-res', dest='resblock', help='IMPORTANT: The number of Resblock layers[default:5]',
-                          default=5, type=int)
-
     misc_args = parser.add_argument_group('Miscellaneous Arguments')
     misc_args.add_argument('--cuda', dest='cuda', help='Whether or not using CUDA[default:1]',
                            default=1, type=int)
