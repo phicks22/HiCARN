@@ -8,7 +8,9 @@ except_chr = {'hsa': {'X': 23, 23: 'X'}, 'mouse': {'X': 20, 20: 'X'}}
 
 
 def readcoo2mat(cooFile, normFile, resolution):
-    """function used for read a coordinated tag file to a square matrix."""
+    """
+    Function used for reading a coordinated tag file to a square matrix.
+    """
     norm = open(normFile, 'r').readlines()
     norm = np.array(list(map(float, norm)))
     compact_idx = list(np.where(np.isnan(norm) ^ True)[0])
@@ -26,7 +28,9 @@ def readcoo2mat(cooFile, normFile, resolution):
 
 
 def compactM(matrix, compact_idx, verbose=False):
-    """compacting matrix according to the index list."""
+    """
+    Compacts the matrix according to the index list.
+    """
     compact_size = len(compact_idx)
     result = np.zeros((compact_size, compact_size)).astype(matrix.dtype)
     if verbose: print('Compacting a', matrix.shape, 'shaped matrix to', result.shape, 'shaped!')
@@ -36,7 +40,9 @@ def compactM(matrix, compact_idx, verbose=False):
 
 
 def spreadM(c_mat, compact_idx, full_size, convert_int=True, verbose=False):
-    """spreading matrix according to the index list (a reversed operation to compactM)."""
+    """
+    Spreads the matrix according to the index list (a reversed operation to compactM).
+    """
     result = np.zeros((full_size, full_size)).astype(c_mat.dtype)
     if convert_int: result = result.astype(np.int)
     if verbose: print('Spreading a', c_mat.shape, 'shaped matrix to', result.shape, 'shaped!')
@@ -53,7 +59,9 @@ def spreadMdict(mats, compacts, sizes, convert_int=True, verbose=False):
 
 
 def dense2tag(matrix):
-    """converting a square matrix (dense) to coo-based tag matrix"""
+    """
+    Converts a square matrix (dense) to coo-based tag matrix.
+    """
     matrix = np.triu(matrix)
     tag_len = np.sum(matrix)
     tag_mat = np.zeros((tag_len, 2), dtype=np.int)
@@ -68,7 +76,9 @@ def dense2tag(matrix):
 
 
 def tag2dense(tag, nsize):
-    """coverting a coo-based tag matrix to densed square matrix."""
+    """
+    Coverts a coo-based tag matrix to densed square matrix.
+    """
     coo_data, data = np.unique(tag, axis=0, return_counts=True)
     row, col = coo_data[:, 0], coo_data[:, 1]
     dense_mat = coo_matrix((data, (row, col)), shape=(nsize, nsize)).toarray()
@@ -77,7 +87,9 @@ def tag2dense(tag, nsize):
 
 
 def downsampling(matrix, down_ratio, verbose=False):
-    """downsampling method"""
+    """
+    Downsampling method.
+    """
     if verbose: print(f"[Downsampling] Matrix shape is {matrix.shape}")
     tag_mat, tag_len = dense2tag(matrix)
     sample_idx = np.random.choice(tag_len, tag_len // down_ratio)
@@ -87,8 +99,10 @@ def downsampling(matrix, down_ratio, verbose=False):
     return down_mat
 
 
-# deviding method
 def divide(mat, chr_num, chunk_size=40, stride=28, bound=201, padding=True, species='hsa', verbose=False):
+    """
+    Dividing method.
+    """
     chr_str = str(chr_num)
     if isinstance(chr_num, str): chr_num = except_chr[species][chr_num]
     result = []
@@ -115,6 +129,9 @@ def divide(mat, chr_num, chunk_size=40, stride=28, bound=201, padding=True, spec
 
 
 def together(matlist, indices, corp=0, species='hsa', tag='HiC'):
+    """
+    Constructs a full dense matrix.
+    """
     chr_nums = sorted(list(np.unique(indices[:, 0])))
     # convert last element to str 'X'
     if chr_nums[-1] in except_chr[species]: chr_nums[-1] = except_chr[species][chr_nums[-1]]
@@ -173,7 +190,7 @@ def dense2sparse(mat, key, low_range, up_range):
     if key == "hic":
         y = np.array(x['hic'])
     elif key == 'deephic':
-        y = np.array(x['deephic'])
+        y = np.array(x['hicarn'])
 
     z = y[low_range:up_range, low_range:up_range]
 
@@ -202,8 +219,8 @@ def reference_regions(mat, key, chromosome, resolution):
     x = np.load(mat)
     if key == "hic":
         y = np.array(x['hic'])
-    elif key == 'deephic':
-        y = np.array(x['deephic'])
+    elif key == 'hicarn':
+        y = np.array(x['hicarn'])
 
     num_bins = y.shape[0]
 
@@ -244,29 +261,3 @@ def get_region(region_dict, up_range, low_range):
             final_list.append(value)
 
     return final_list
-
-
-mat1 = '/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/MAE_Loss/GM12878/predict_chr14_40kb.npz'
-# mat = '/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr14_10kb.npz'
-mat1 = np.load(mat1)['deephic']
-# mat = np.load(mat)['hic']
-mat = mat1[2250:2500, 2250:2500]
-
-# sparse_mat = dense2sparse(mat1, key='deephic', chromosome=4, up_range=4500, low_range=4000)
-
-# ref_region = get_region(region_dict=(reference_regions(mat1, key='deephic', chromosome=4,
-#                                                        resolution=10)), up_range=4500, low_range=4000)
-#
-# ref_region = reference_regions(mat, key='hic', chromosome=4, resolution=10)
-
-# np.savetxt('GM12878_HiCARN_1_MAE_Loss_RefReg_Chr4_40Mb_45Mb.txt', X=ref_region, fmt="%i %i %i", delimiter='\t')
-# np.savetxt('GM12878_HiCARN_1_MAE_Loss_Chr4_40Mb_45Mb.txt', X=sparse_mat, fmt="%i %i %f", delimiter='\t')
-
-# subs = divide(mat, chr_num=4).tolist()
-
-
-# with open('GM12878_HiCARN_1_Chr14_22_5Mb_25Mb', 'w') as f:
-#     for item in subs:
-#         f.write("%s\n" % item)
-
-# np.savetxt("GM12878_HiCARN_1_Chr4_40x40_subs.txt", X=subs, fmt="%f", delimiter='\t')
