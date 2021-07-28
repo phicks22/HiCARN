@@ -7,11 +7,8 @@ from tqdm import tqdm
 import Models.HiCSR as hicsr
 import Models.HiCNN as hicnn
 import Models.HiCPlus as hicplus
-from math import log10
 import torch
 import torch.nn.functional as F
-from Utils.SSIM import ssim
-from Utils.GenomeDISCO import compute_reproducibility
 from Utils.io import spreadM, together
 
 from Data.Arg_Parser import *
@@ -62,56 +59,18 @@ def hicarn_predictor(model, deephic_loader, ckpt_file, device):
 
     result_data = []
     result_inds = []
-    test_metrics = {'mse': 0, 'ssims': 0, 'psnr': 0, 'ssim': 0, 'nsamples': 0}
-    ssims = []
-    psnrs = []
-    mses = []
-    repro = []
 
     model.eval()
     with torch.no_grad():
         for batch in tqdm(deephic_loader, desc='HiCSR Predicting: '):
             lr, hr, inds = batch
-            batch_size = lr.size(0)
-            test_metrics['nsamples'] += batch_size
             lr = lr.to(device)
-            hr = hr.to(device)
             out = predict(model, lr)
-
-            batch_mse = ((out - hr) ** 2).mean()
-            test_metrics['mse'] += batch_mse * batch_size
-            batch_ssim = ssim(out, hr)
-            test_metrics['ssims'] += batch_ssim * batch_size
-            test_metrics['psnr'] = 10 * log10(1 / (test_metrics['mse'] / test_metrics['nsamples']))
-            test_metrics['ssim'] = test_metrics['ssims'] / test_metrics['nsamples']
-            tqdm(deephic_loader, desc='HiCNN Predicting: ').set_description(
-                desc=f"[Predicting in Test set] PSNR: {test_metrics['psnr']:.4f} dB SSIM: {test_metrics['ssim']:.4f}")
-
-            for i, j in zip(hr, out):
-                out1 = torch.squeeze(j, dim=0)
-                hr1 = torch.squeeze(i, dim=0)
-                out2 = out1.cpu().detach().numpy()
-                hr2 = hr1.cpu().detach().numpy()
-                genomeDISCO = compute_reproducibility(out2, hr2, transition=True)
-                repro.append(genomeDISCO)
-
-            ssims.append(test_metrics['ssim'])
-            psnrs.append(test_metrics['psnr'])
-            mses.append(batch_mse)
 
             result_data.append(out.to('cpu').numpy())
             result_inds.append(inds.numpy())
     result_data = np.concatenate(result_data, axis=0)
     result_inds = np.concatenate(result_inds, axis=0)
-    mean_ssim = sum(ssims) / len(ssims)
-    mean_psnr = sum(psnrs) / len(psnrs)
-    mean_mse = sum(mses) / len(mses)
-    mean_repro = sum(repro) / len(repro)
-
-    print("Mean SSIM: ", mean_ssim)
-    print("Mean PSNR: ", mean_psnr)
-    print("Mean MSE: ", mean_mse)
-    print("GenomeDISCO Score: ", mean_repro)
     deep_hics = together(result_data, result_inds, tag='Reconstructing: ')
     return deep_hics
 
