@@ -114,9 +114,8 @@ class Generator(nn.Module):
         return out
 
 
-# PCARN Discriminator
 class Discriminator(nn.Module):
-    def __init__(self, downsample=1):
+    def __init__(self):
         super().__init__()
 
         def conv_bn_lrelu(in_channels, out_channels, ksize, stride, pad):
@@ -127,7 +126,7 @@ class Discriminator(nn.Module):
             )
 
         self.body = nn.Sequential(
-            nn.Conv2d(1, 64, 3, 1, 1), nn.LeakyReLU(),
+            nn.Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)), nn.LeakyReLU(),
             conv_bn_lrelu(64, 64, 4, 2, 1),
             conv_bn_lrelu(64, 128, 3, 1, 1),
             conv_bn_lrelu(128, 128, 4, 2, 1),
@@ -135,18 +134,10 @@ class Discriminator(nn.Module):
             conv_bn_lrelu(256, 256, 4, 2, 1),
             conv_bn_lrelu(256, 512, 3, 1, 1),
             conv_bn_lrelu(512, 512, 3, 1, 1),
-            nn.Conv2d(512, 1, 3, 1, 1),
+            nn.Conv2d(512, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.Sigmoid()
         )
 
-        if downsample > 1:
-            self.avg_pool = nn.AvgPool2d(downsample)
-
-        self.downsample = downsample
-
     def forward(self, x):
-        if self.downsample > 1:
-            x = self.avg_pool(x)
-
         out = self.body(x)
         return out

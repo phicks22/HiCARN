@@ -3,11 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-# DeepHiC Function
-def swish(x):
-    return x * torch.sigmoid(x)
-
-
 class Basic_Block(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -80,9 +75,6 @@ class Generator(nn.Module):
     def __init__(self, num_channels):
         super().__init__()
 
-        #self.sub_mean = Ops.MeanShift((0.4488, 0.4371, 0.4040), sub=True)
-        #self.add_mean = Ops.MeanShift(, sub=False)
-
         # Entry 3x3 convolution layer
         self.entry = nn.Conv2d(1, num_channels, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
 
@@ -104,7 +96,6 @@ class Generator(nn.Module):
         Applies the following sequence of functions to the input:
            3x3 entry Conv --> 3 * (Cascading Block --> Add previous block input --> 1x1 Conv) --> 3x3 exit Conv.
         """
-        #x = self.sub_mean(x)
         x = self.entry(x)
         c0 = o0 = x
         b1 = self.cb1(o0)
@@ -120,5 +111,4 @@ class Generator(nn.Module):
         o3 = self.cv3(c3)
 
         out = self.exit(o3)
-        #out = self.add_mean(out)
         return out
