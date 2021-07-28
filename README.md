@@ -31,7 +31,7 @@ the cell line name will be created containing contact matrices for all chromosom
 the [README](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE63525&format=file&file=GSE63525%5FOVERALL%5FREADME%2Ertf)
 for further details.
 
-Processed data from our `Example_Data` folder should be placed in `$root_dir/data`. 
+Processed data from our `Data/Example_Data` directory should be placed in `$root_dir/data`. 
 
 Follow the following steps to generate datasets in .npz format:
 1. **Read the raw data.** 
