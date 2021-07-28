@@ -97,7 +97,7 @@ def data_divider_parser():
     hicarn_args.add_argument('-bound', dest='bound', help='REQUIRED: distance boundary interested[example:201]',
                               default=201, type=int, required=True)
     hicarn_args.add_argument('-scale', dest='scale', help='REQUIRED: Downpooling scale[example:1]',
-                              type=int, required=True)
+                              default=1, type=int, required=True)
     hicarn_args.add_argument('-type', dest='pool_type', help='OPTIONAL: Downpooling type[default:max]',
                               default='max', choices=['max', 'avg'])
     parser.add_argument(*help_opt[0], **help_opt[1])

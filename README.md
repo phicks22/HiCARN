@@ -67,7 +67,7 @@ All arguments:
    hicarn_10kb40kb_c40_s40_b201_nonpool_train.npz. 
    
 ```bash
-$ python Data/Generate.py -hr 10kb -lr 40kb -lrc 100 -s train -chunk 40 -stride 40 -bound 201 -c GM12878
+$ python Data/Generate.py -hr 10kb -lr 40kb -lrc 100 -s train -chunk 40 -stride 40 -bound 201 -scale 1 -c GM12878
 ```
 All arguments:
 * `-hr`: High resolution in chrN_[HR].npz used as a target for training. Default is 10kb.
@@ -77,6 +77,7 @@ All arguments:
 * `-chunk`: nxn size for each submatrix. Default is 40.
 * `-stride`: Set equal to `-chunk`. Default is 40.
 * `-bound`: The upper bound of genomic distance. Default is 201.
+* `-scale`: Whether to pool input submatrices or not. Default is 1.
 * `-c`: That cell line name again...
 
 Congratulations! You now have your datasets. ***Note***: For training, you must have both training and validation 
