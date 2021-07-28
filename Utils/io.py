@@ -189,7 +189,7 @@ def dense2sparse(mat, key, low_range, up_range):
     x = np.load(mat)
     if key == "hic":
         y = np.array(x['hic'])
-    elif key == 'deephic':
+    elif key == 'hicarn':
         y = np.array(x['hicarn'])
 
     z = y[low_range:up_range, low_range:up_range]
