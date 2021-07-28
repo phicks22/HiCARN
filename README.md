@@ -38,7 +38,7 @@ Follow the following steps to generate datasets in .npz format:
    * This will create a new directory `$root_dir/mat/[cell_line_name]` where all chrN_10kb.npz files
 will be stored.
 
-```python
+```bash
 $ python Data/Read.py -c GM12878
 ```
 Required arguments:
@@ -51,7 +51,7 @@ Optional arguments:
 
 2. **Randomly downsample the data.** This adds downsampled HR data to `$root_dir/mat/[cell_line_name]` as chrN_[LR].npz.
 
-```python
+```bash
 $ python Data/Downsample.py -hr 10kb -lr 40kb -r 16 -c GM12878
 ```
 All arguments:
@@ -66,7 +66,7 @@ All arguments:
    * This specific example will create a file in `$root_dir/data` named 
    hicarn_10kb40kb_c40_s40_b201_nonpool_train.npz. 
    
-```python
+```bash
 $ python Data/Generate.py -hr 10kb -lr 40kb -lrc 100 -s train -chunk 40 -stride 40 -bound 201 -c GM12878
 ```
 All arguments:
@@ -89,7 +89,7 @@ We provide training files for both HiCARN-1 and HiCARN-2.
 
 To train:
 
-```python
+```bash
 $ python Train/HiCARN_[1 or 2]_Train.py
 ```
 ___________________
@@ -99,12 +99,12 @@ We provide pretrained weights for HiCARN and all other compared models. You can 
 your own trained model. 
 
 1. If predicting with HiCARN-1, HiCARN-2, or DeepHiC:
-```python
+```bash
 $ python Predict/40x40_Predict.py -m hicarn_1 -lr 40kb -ckpt root_dir/checkpoints/weights_file.pytorch -c GM12878
 ```
 
 2. If predicting with HiCSR, HiCNN, or HiCPlus:
-```python
+```bash
 $ python Predict/28x28_Predict.py -m hicsr -lr 40kb -ckpt root_dir/checkpoints/weights_file.pytorch -c GM12878
 ```
 All arguments:
