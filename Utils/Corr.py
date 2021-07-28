@@ -1,14 +1,18 @@
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
 
+
 def _clear_max_min(x, y):
     idx_x = set(np.where((x>x.min()) & (x<x.max()))[0])
     idx_y = set(np.where((y>y.min()) & (y<y.max()))[0])
     inter_idx = sorted(list(idx_x.intersection(idx_y)))
     return x[inter_idx], y[inter_idx]
 
+
 def diagcorr(mat1, mat2, rtype='pearson', max_shift=100, percentile=100, clearmaxmin=False, symmetric=False):
-    """ function for calculating pearson correlation along with distance genome. """
+    """
+    Function for calculating pearson correlation along with distance genome.
+    """
     l1, l2 = len(mat1), len(mat2)
     # adjust to same size
     padding = (l1 - l2) // 2
@@ -41,21 +45,3 @@ def diagcorr(mat1, mat2, rtype='pearson', max_shift=100, percentile=100, clearma
             r[s], p[s] = spearmanr(diag1, diag2)
 
     return r
-
-# mat1 = '/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/MAE_Loss/GM12878/predict_chr14_40kb.npz'
-mat1 = '/Users/parkerhicks/Desktop/Datasets_NPZ/DeepHiC_Predict/predict_chr14_40kb.npz'
-mat = '/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr14_10kb.npz'
-mat1 = (np.load(mat1)['deephic'])
-mat2 = (np.load(mat)['hic'])
-
-
-
-r_list = []
-for i in diagcorr(mat1, mat2):
-    r_list.append(i)
-
-pcc = sum(r_list) / len(r_list)
-
-print(pcc)
-
-# print(diagcorr(mat1, mat2))

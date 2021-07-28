@@ -89,24 +89,3 @@ def compute_reproducibility(m1_csr, m2_csr, transition, tmax=3, tmin=3):
 
     reproducibility = 1 - auc
     return reproducibility
-
-
-# carn = '/Users/parkerhicks/Desktop/Datasets_NPZ/CARN_Predict/Recent/GM12878/predict_chr14_40kb.npz'
-# real = '/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr14_10kb.npz'
-# deep = '/Users/parkerhicks/Desktop/Datasets_NPZ/DeepHiC_Predict/predict_chr14_40kb.npz'
-#
-# carn = np.load(carn)
-# carn = np.array(carn['deephic'])[2250:2290, 2250:2290]
-#
-# deep = np.load(deep)
-# deep = np.array(deep['deephic'])[2250:2290, 2250:2290]
-#
-# real = np.load(real)
-# real = np.array(real['hic'])[2250:2290, 2250:2290]
-# # [2250:2500, 2250:2500]
-#
-# print(compute_reproducibility(carn, real, transition=True))
-
-# mat = np.random.randn(28, 28)
-# mat2 = mat.resize((40, 40))
-# print(mat2)
