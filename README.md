@@ -104,7 +104,7 @@ $ python Predict/40x40_Predict.py -m hicarn_1 -lr 40kb -ckpt root_dir/checkpoint
 ```
 
 2. If predicting with HiCSR, HiCNN, or HiCPlus:
-* These models output a 28x28 matric from a 40x40 input, so the inputs need to be padded to 52x52 so that a 40x40
+* These models output a 28x28 matrix from a 40x40 input, so the inputs need to be padded to 52x52 so that a 40x40
 output is returned.
 ```bash
 $ python Predict/28x28_Predict.py -m hicsr -lr 40kb -ckpt root_dir/checkpoints/weights_file.pytorch -c GM12878
