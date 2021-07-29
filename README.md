@@ -112,7 +112,7 @@ output is returned.
 $ python Predict/28x28_Predict.py -m hicsr -lr 40kb -ckpt root_dir/checkpoints/weights_file.pytorch -c GM12878
 ```
 All arguments:
-* `-m`: Model to predict with. Options are hicarn_1, hicarn_2, deephic, hicsr, hicnn, and hicplus.
+* `-m`: Model to predict with. Options are hicarn_1, hicarn_2, deephic, hicsr, hicnn, or hicplus.
 * `-lr`: Low resolution to be enhanced. Default is 40kb.
 * `-ckpt`: Checkpoint file from either our `Pretrained_weights` or your `$root_dir/checkpoints` directory.
 * `-f`: Low resolution file to be enhanced. 

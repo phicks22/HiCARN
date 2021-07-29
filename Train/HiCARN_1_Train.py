@@ -173,6 +173,11 @@ final_ckpt_g = f'{datestr}_finalg_{resos}_c{chunk}_s{stride}_b{bound}_{pool}_{na
 
 
 ######### Uncomment to track scores across epochs #########
+# ssim_scores = ssim_scores.cpu()
+# psnr_scores = psnr_scores.cpu()
+# mse_scores = mse_scores.cpu()
+# mae_scores = mae_scores.cpu()
+
 # ssim_scores = np.array(ssim_scores)
 # psnr_scores = np.array(psnr_scores)
 # mse_scores = np.array(mse_scores)
