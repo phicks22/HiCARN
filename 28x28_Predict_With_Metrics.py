@@ -4,9 +4,6 @@ import multiprocessing
 import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-import Models.HiCSR as hicsr
-import Models.HiCNN as hicnn
-import Models.HiCPlus as hicplus
 from math import log10
 import torch
 import torch.nn.functional as F
@@ -14,7 +11,7 @@ from Utils.SSIM import ssim
 from Utils.GenomeDISCO import compute_reproducibility
 from Utils.io import spreadM, together
 
-from Data.Arg_Parser import *
+from Arg_Parser import *
 
 
 # Adjust 40x40 data for HiCSR/HiCNN/HiCPlus 28x28 output

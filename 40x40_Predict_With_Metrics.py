@@ -4,15 +4,12 @@ import multiprocessing
 import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-import Models.HiCARN_1 as hicarn_1
-import Models.HiCARN_2 as hicarn_2
-import Models.DeepHiC as deephic
 from math import log10
 import torch
 from Utils.SSIM import ssim
 from Utils.GenomeDISCO import compute_reproducibility
 from Utils.io import spreadM, together
-from Data.Arg_Parser import *
+from Arg_Parser import *
 
 
 def dataloader(data, batch_size=64):

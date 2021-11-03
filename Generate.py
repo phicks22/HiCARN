@@ -3,7 +3,7 @@ import time
 import multiprocessing
 import numpy as np
 from Utils.io import compactM, divide, pooling
-from Data.Arg_Parser import *
+from Arg_Parser import *
 
 
 def carn_divider(n, high_file, down_file, scale=1, pool_type='max', chunk=40, stride=40, bound=201, lr_cutoff=100, hr_cutoff=255):

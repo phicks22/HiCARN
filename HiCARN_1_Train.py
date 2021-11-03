@@ -5,11 +5,11 @@ from tqdm import tqdm
 import torch
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
-from Models.HiCARN_2 import Generator, Discriminator
-from Models.HiCARN_2_Loss import GeneratorLoss
+from Models.HiCARN_1 import Generator
+from Models.HiCARN_1_Loss import GeneratorLoss
 from Utils.SSIM import ssim
 from math import log10
-from Data.Arg_Parser import root_dir
+from Arg_Parser import root_dir
 
 cs = np.column_stack
 
@@ -34,14 +34,14 @@ chunk = 40
 stride = 40
 bound = 201
 pool = 'nonpool'
-name = 'HiCARN_2'
+name = 'HiCARN_1'
 
 num_epochs = 200
 batch_size = 64
 
 # whether using GPU for training
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print("CUDA avalable?", torch.cuda.is_available())
+print("CUDA available? ", torch.cuda.is_available())
 print("Device being used: ", device)
 
 # prepare training dataset
@@ -70,15 +70,12 @@ valid_loader = DataLoader(valid_set, batch_size=batch_size, shuffle=False, drop_
 
 # load network
 netG = Generator(num_channels=64).to(device)
-netD = Discriminator().to(device)
 
 # loss function
 criterionG = GeneratorLoss().to(device)
-criterionD = torch.nn.BCELoss().to(device)
 
 # optimizer
 optimizerG = optim.Adam(netG.parameters(), lr=0.0003)
-optimizerD = optim.Adam(netD.parameters(), lr=0.0003)
 
 ssim_scores = []
 psnr_scores = []
@@ -87,11 +84,10 @@ mae_scores = []
 
 best_ssim = 0
 for epoch in range(1, num_epochs + 1):
-    run_result = {'nsamples': 0, 'd_loss': 0, 'g_loss': 0, 'd_score': 0, 'g_score': 0}
+    run_result = {'nsamples': 0, 'g_loss': 0, 'g_score': 0}
 
     alr = adjust_learning_rate(epoch)
     optimizerG = optim.Adam(netG.parameters(), lr=alr)
-    optimizerD = optim.Adam(netD.parameters(), lr=alr)
 
     for p in netG.parameters():
         if p.grad is not None:
@@ -99,55 +95,31 @@ for epoch in range(1, num_epochs + 1):
     torch.cuda.empty_cache()
 
     netG.train()
-    netD.train()
     train_bar = tqdm(train_loader)
     for data, target, _ in train_bar:
         batch_size = data.size(0)
         run_result['nsamples'] += batch_size
-        ############################
-        # (1) Update D network: maximize D(x)-1-D(G(z))
-        ###########################
+
         real_img = target.to(device)
         z = data.to(device)
         fake_img = netG(z)
 
-        ######### Train discriminator #########
-        netD.zero_grad()
-        real_out = netD(real_img)
-        fake_out = netD(fake_img)
-        d_loss_real = criterionD(real_out, torch.ones_like(real_out))
-        d_loss_fake = criterionD(fake_out, torch.zeros_like(fake_out))
-        d_loss = d_loss_real + d_loss_fake
-        d_loss.backward(retain_graph=True)
-        optimizerD.step()
-
         ######### Train generator #########
         netG.zero_grad()
-        g_loss = criterionG(fake_out.mean(), fake_img, real_img)
+        g_loss = criterionG(fake_img, real_img)
         g_loss.backward()
         optimizerG.step()
 
         run_result['g_loss'] += g_loss.item() * batch_size
-        run_result['d_loss'] += d_loss.item() * batch_size
-        run_result['d_score'] += real_out.mean().item() * batch_size
-        run_result['g_score'] += fake_out.mean().item() * batch_size
 
         train_bar.set_description(
-            desc=f"[{epoch}/{num_epochs}] "
-                 f"Loss_D: {run_result['d_loss'] / run_result['nsamples']:.4f} "
-                 f"Loss_G: {run_result['g_loss'] / run_result['nsamples']:.4f} "
-                 f"D(x): {run_result['d_score'] / run_result['nsamples']:.4f} "
-                 f"D(G(z)): {run_result['g_score'] / run_result['nsamples']:.4f}")
-
+            desc=f"[{epoch}/{num_epochs}] Loss_G: {run_result['g_loss'] / run_result['nsamples']:.4f}")
     train_gloss = run_result['g_loss'] / run_result['nsamples']
-    train_dloss = run_result['d_loss'] / run_result['nsamples']
-    train_dscore = run_result['d_score'] / run_result['nsamples']
     train_gscore = run_result['g_score'] / run_result['nsamples']
 
-    valid_result = {'g_loss': 0, 'd_loss': 0, 'g_score': 0, 'd_score': 0,
+    valid_result = {'g_loss': 0,
                     'mse': 0, 'ssims': 0, 'psnr': 0, 'ssim': 0, 'nsamples': 0}
     netG.eval()
-    netD.eval()
 
     batch_ssims = []
     batch_mses = []
@@ -163,17 +135,11 @@ for epoch in range(1, num_epochs + 1):
             hr = val_hr.to(device)
             sr = netG(lr)
 
-            sr_out = netD(sr)
-            hr_out = netD(hr)
-            d_loss_real = criterionD(hr_out, torch.ones_like(hr_out))
-            d_loss_fake = criterionD(sr_out, torch.zeros_like(sr_out))
-            d_loss = d_loss_real + d_loss_fake
-            g_loss = criterionG(sr_out.mean(), sr, hr)
+            sr_out = sr
+            hr_out = hr
+            g_loss = criterionG(sr, hr)
 
             valid_result['g_loss'] += g_loss.item() * batch_size
-            valid_result['d_loss'] += d_loss.item() * batch_size
-            valid_result['g_score'] += sr_out.mean().item() * batch_size
-            valid_result['d_score'] += hr_out.mean().item() * batch_size
 
             batch_mse = ((sr - hr) ** 2).mean()
             batch_mae = (abs(sr - hr)).mean()
@@ -196,9 +162,6 @@ for epoch in range(1, num_epochs + 1):
     mae_scores.append((sum(batch_maes) / len(batch_maes)))
 
     valid_gloss = valid_result['g_loss'] / valid_result['nsamples']
-    valid_dloss = valid_result['d_loss'] / valid_result['nsamples']
-    valid_gscore = valid_result['g_score'] / valid_result['nsamples']
-    valid_dscore = valid_result['d_score'] / valid_result['nsamples']
     now_ssim = valid_result['ssim'].item()
 
     if now_ssim > best_ssim:
@@ -206,6 +169,7 @@ for epoch in range(1, num_epochs + 1):
         print(f'Now, Best ssim is {best_ssim:.6f}')
         best_ckpt_file = f'{datestr}_bestg_{resos}_c{chunk}_s{stride}_b{bound}_{pool}_{name}.pytorch'
         torch.save(netG.state_dict(), os.path.join(out_dir, best_ckpt_file))
+final_ckpt_g = f'{datestr}_finalg_{resos}_c{chunk}_s{stride}_b{bound}_{pool}_{name}.pytorch'
 
 
 ######### Uncomment to track scores across epochs #########
@@ -224,8 +188,4 @@ for epoch in range(1, num_epochs + 1):
 # np.savetxt(f'valid_mse_scores_{name}', X=mse_scores, delimiter=',')
 # np.savetxt(f'valid_mae_scores_{name}', X=mae_scores, delimiter=',')
 
-final_ckpt_g = f'{datestr}_finalg_{resos}_c{chunk}_s{stride}_b{bound}_{pool}_{name}.pytorch'
-final_ckpt_d = f'{datestr}_finald_{resos}_c{chunk}_s{stride}_b{bound}_{pool}_{name}.pytorch'
-
 torch.save(netG.state_dict(), os.path.join(out_dir, final_ckpt_g))
-torch.save(netD.state_dict(), os.path.join(out_dir, final_ckpt_d))

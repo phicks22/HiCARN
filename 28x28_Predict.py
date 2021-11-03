@@ -4,14 +4,11 @@ import multiprocessing
 import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-import Models.HiCSR as hicsr
-import Models.HiCNN as hicnn
-import Models.HiCPlus as hicplus
 import torch
 import torch.nn.functional as F
 from Utils.io import spreadM, together
 
-from Data.Arg_Parser import *
+from Arg_Parser import *
 
 
 # Adjust 40x40 data for HiCSR/HiCNN/HiCPlus 28x28 output
@@ -122,7 +119,7 @@ if __name__ == '__main__':
         save_data(hicarn_hics[key], compacts[key], sizes[key], file)
 
 
-    pool = multiprocessing.Pool(processes=3)
+    pool = multiprocessing.Pool(processes=pool_num)
     print(f'Start a multiprocess pool with process_num = 3 for saving predicted data')
     for key in compacts.keys():
         pool.apply_async(save_data_n, (key,))
