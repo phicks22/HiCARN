@@ -68,27 +68,3 @@ def _clear_max_min(x, y):
     idx_setx, idx_sety = set(idx_x), set(idx_y)
     inter_idx = np.array(list(idx_setx.intersection(idx_sety)))
     return x[inter_idx], y[inter_idx]
-
-
-# CARN = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/GM12878/predict_chr4_40kb.npz')
-# CARN = np.array(CARN['deephic'])[4080:4150, 4080:4150]
-# deep = np.load('./Datasets_NPZ/DeepHiC_Predict/GM12878/predict_chr4_40kb.npz')
-# deep = np.array(deep['deephic'])[4080:4150, 4080:4150]
-# hicnn = np.load("/Users/parkerhicks/Desktop/Datasets_NPZ/HiCNN_Predict/GM12878/predict_chr4_40kb.npz")
-# hicnn = np.array(hicnn['deephic'])[4080:4150, 4080:4150]
-# hicplus = np.load('./Datasets_NPZ/HiCPlus_Predict/GM12878/predict_chr4_40kb.npz')
-# hicplus = np.array(hicplus['deephic'])[4080:4150, 4080:4150]
-hicsr = np.load('./Datasets_NPZ/HiCSR_Predict/GM12878/predict_chr4_40kb.npz')
-hicsr = np.array(hicsr['deephic'])[4080:4150, 4080:4150]
-# PCARN = np.load('./Datasets_NPZ/HiCARN_2_Predict/GM12878/predict_chr4_40kb.npz')
-# PCARN = np.array(PCARN['deephic'])[4080:4150, 4080:4150]
-# real = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr4_10kb.npz')
-# real = (np.array(real['hic'])[4080:4150, 4080:4150]) / 255
-fake = np.load('./Datasets_NPZ/mat/GM12878/chr4_40kb.npz')
-fake = (np.array(fake['hic'])[4080:4150, 4080:4150]) / 255
-# data = [hicnn[4][4000:4250, 4000:4250]]
-
-
-data = [hicsr, fake]
-hic_heatmap(data, dediag=0, ncols=2)
-plt.show()

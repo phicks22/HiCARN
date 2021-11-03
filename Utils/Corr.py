@@ -1,5 +1,4 @@
 import numpy as np
-import os
 from scipy.stats import pearsonr, spearmanr
 
 
@@ -46,45 +45,3 @@ def diagcorr(mat1, mat2, rtype='pearson', max_shift=100, percentile=100, clearma
             r[s], p[s] = spearmanr(diag1, diag2)
 
     return r
-
-
-# root_pred = '/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_2_Predict/GM12878/5CB/'
-# root_real = '/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/'
-
-# for file in os.listdir(root):
-#     mat1 = np.load(file)
-#     mat1 = mat1['deephic']
-#
-#     rplist = []
-#     for i in diagcorr(mat1, mat2, rtype='pearson'):
-#         rplist.append(i)
-#
-#     rp = sum(rplist) / len(rplist)
-#     cor_dict[f'pearson_{file}'] = rp
-#
-#     rslist = []
-#     for i in diagcorr(mat1, mat2, rtype='spearman'):
-#         rslist.append(i)
-#
-#     rs = sum(rslist) / len(rslist)
-#     cor_dict[f'spearman_{file}'] = rs
-
-mat1 = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/10CB_MSE/GM12878/predict_chr20_40kb.npz')
-mat1 = ((mat1['deephic']))
-
-mat2 = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr20_10kb.npz')
-mat2 = ((mat2['hic']))
-
-rplist = []
-for i in diagcorr(mat1, mat2, rtype='pearson'):
-    rplist.append(i)
-
-rp = sum(rplist) / len(rplist)
-
-rslist = []
-for i in diagcorr(mat1, mat2, rtype='spearman'):
-    rslist.append(i)
-
-rs = sum(rslist) / len(rslist)
-
-print("Pearson: ", rp, '\n', "Spearman: ", rs)

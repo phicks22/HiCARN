@@ -119,7 +119,7 @@ if __name__ == '__main__':
         save_data(hicarn_hics[key], compacts[key], sizes[key], file)
 
 
-    pool = multiprocessing.Pool(processes=3)
+    pool = multiprocessing.Pool(processes=pool_num)
     print(f'Start a multiprocess pool with process_num = 3 for saving predicted data')
     for key in compacts.keys():
         pool.apply_async(save_data_n, (key,))
