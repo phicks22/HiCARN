@@ -3,7 +3,7 @@ import time
 import multiprocessing
 import numpy as np
 from Utils.io import downsampling
-from Data.Arg_Parser import *
+from Arg_Parser import *
 
 
 def downsample(in_file, low_res, ratio):

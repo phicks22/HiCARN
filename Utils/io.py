@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
-from scipy.sparse import coo_matrix
+#from scipy.sparse import coo_matrix
 
 except_chr = {'hsa': {'X': 23, 23: 'X'}, 'mouse': {'X': 20, 20: 'X'}}
 
@@ -189,8 +189,8 @@ def dense2sparse(mat, key, low_range, up_range):
     x = np.load(mat)
     if key == "hic":
         y = np.array(x['hic'])
-    elif key == 'hicarn':
-        y = np.array(x['hicarn'])
+    elif key == 'deephic':
+        y = np.array(x['deephic']) * 255
 
     z = y[low_range:up_range, low_range:up_range]
 
@@ -261,3 +261,102 @@ def get_region(region_dict, up_range, low_range):
             final_list.append(value)
 
     return final_list
+
+
+# np.savetxt("GM12878_HiCARN_2_Chr4_45_50Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=5000, low_range=4500),
+#            delimiter='\t', fmt='%i %i %f')
+# #
+# np.savetxt("GM12878_HiCARN_2_Chr4_50Mb_55Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=5500, low_range=5000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_55Mb_60Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=6000, low_range=5500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_60Mb_65Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=6500, low_range=6000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_65Mb_70Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=7000, low_range=6500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_70Mb_75Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=7500, low_range=7000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_75Mb_80Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=8000, low_range=7500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_80Mb_85Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=8500, low_range=8000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_85Mb_90Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=9000, low_range=8500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_90Mb_95Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=9500, low_range=9000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_95Mb_100Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=10000, low_range=9500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_100Mb_105Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=10500, low_range=10000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_105Mb_110Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=11000, low_range=10500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_110Mb_115Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=11500, low_range=11000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_115Mb_120Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=12000, low_range=11500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_120Mb_125Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=12500, low_range=12000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_125Mb_130Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=13000, low_range=12500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_130Mb_135Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=13500, low_range=13000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_135Mb_140Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=14000, low_range=13500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_140Mb_145Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=14500, low_range=14000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_145Mb_150Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=15000, low_range=14500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_150Mb_155Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=15500, low_range=15000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_155Mb_160Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=16000, low_range=15500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_160Mb_165Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=16500, low_range=16000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_165Mb_170Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=17000, low_range=16500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_170Mb_175Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=17500, low_range=17000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_175Mb_180Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=18000, low_range=17500),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_180Mb_185Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=18500, low_range=18000),
+#            delimiter='\t', fmt='%i %i %f')
+#
+# np.savetxt("GM12878_HiCARN_2_Chr4_185Mb_190Mb_Sparse.txt", dense2sparse(mat1, 'deephic', up_range=19000, low_range=18500),
+#            delimiter='\t', fmt='%i %i %f')
+
+# np.savetxt("GM12878_HiCARN_2_Chr14_20Mb_25Mb_Sparse.txt", dense2sparse(mat2, 'deephic', up_range=2500, low_range=2000),
+#            delimiter='\t', fmt='%i %i %f')
+
+
+# mat1 = '/Users/parkerhicks/Desktop/chr4_40kb.npz'
+#
+# np.savetxt("GM12878_16ds_Chr4_40Mb_42_5Mb_Sparse.txt", dense2sparse(mat1, 'hic', up_range=4250, low_range=4000),
+#            delimiter='\t', fmt='%i %i %f')
+
+

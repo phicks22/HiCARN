@@ -4,7 +4,7 @@ import multiprocessing
 import numpy as np
 
 from Utils.io import readcoo2mat
-from Data.Arg_Parser import *
+from Arg_Parser import *
 
 
 def read_data(data_file, norm_file, out_dir, resolution):

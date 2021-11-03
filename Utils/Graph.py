@@ -70,30 +70,25 @@ def _clear_max_min(x, y):
     return x[inter_idx], y[inter_idx]
 
 
-# CARN = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/10CB_MSE/GM12878/predict_chr14_40kb.npz')
-# CARN = np.array(CARN['deephic'])[2250:2500, 2250:2500]
-# deep = np.load('./Datasets_NPZ/DeepHiC_Predict/GM12878/predict_chr14_40kb.npz')
-# deep = np.array(deep['deephic'])[2250:2500, 2250:2500]
-# hicnn = np.load("/Users/parkerhicks/Desktop/Datasets_NPZ/HiCNN_Predict/GM12878/predict_chr14_40kb.npz")
-# hicnn = np.array(hicnn['deephic'])[2250:2500, 2250:2500]
-# hicnn = np.load("/Users/parkerhicks/Desktop/Datasets_NPZ/HiCNN2_Predict/GM12878/HiCNN_Predict_chr4_40kb.npy", allow_pickle=True).item()
-# hicplus = np.load('./Datasets_NPZ/HiCPlus_Predict/GM12878/predict_chr14_40kb.npz')
-# hicplus = np.array(hicplus['deephic'])[2250:2500, 2250:2500]
-hicsr = np.load('./Datasets_NPZ/HiCSR_Predict/predict_chr16_40kb.npz')
-hicsr = np.array(hicsr['deephic'])[5500:6000, 5500:6000]
-# CARN_deep = np.load('./Datasets_NPZ/CARN_Deep_Predict/Recent/Gm12878/predict_chr4_40kb_40.npz')
-# CARN_deep = np.array(CARN_deep['deephic'])
-# PCARN = np.load('./Datasets_NPZ/PCARN_Predict/Recent/GM12878/predict_chr4_40kb_40.npz')
-# PCARN = np.array(PCARN['deephic'])[4000:4500, 4000:4500]
-real = np.load('./Datasets_NPZ/mat/GM12878/chr16_10kb.npz')
-real = (np.array(real['hic'])[5500:6000, 5500:6000]) / 255
-fake = real / 16
+# CARN = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/HiCARN_1_Predict/GM12878/predict_chr4_40kb.npz')
+# CARN = np.array(CARN['deephic'])[4080:4150, 4080:4150]
+# deep = np.load('./Datasets_NPZ/DeepHiC_Predict/GM12878/predict_chr4_40kb.npz')
+# deep = np.array(deep['deephic'])[4080:4150, 4080:4150]
+# hicnn = np.load("/Users/parkerhicks/Desktop/Datasets_NPZ/HiCNN_Predict/GM12878/predict_chr4_40kb.npz")
+# hicnn = np.array(hicnn['deephic'])[4080:4150, 4080:4150]
+# hicplus = np.load('./Datasets_NPZ/HiCPlus_Predict/GM12878/predict_chr4_40kb.npz')
+# hicplus = np.array(hicplus['deephic'])[4080:4150, 4080:4150]
+hicsr = np.load('./Datasets_NPZ/HiCSR_Predict/GM12878/predict_chr4_40kb.npz')
+hicsr = np.array(hicsr['deephic'])[4080:4150, 4080:4150]
+# PCARN = np.load('./Datasets_NPZ/HiCARN_2_Predict/GM12878/predict_chr4_40kb.npz')
+# PCARN = np.array(PCARN['deephic'])[4080:4150, 4080:4150]
+# real = np.load('/Users/parkerhicks/Desktop/Datasets_NPZ/mat/GM12878/chr4_10kb.npz')
+# real = (np.array(real['hic'])[4080:4150, 4080:4150]) / 255
+fake = np.load('./Datasets_NPZ/mat/GM12878/chr4_40kb.npz')
+fake = (np.array(fake['hic'])[4080:4150, 4080:4150]) / 255
 # data = [hicnn[4][4000:4250, 4000:4250]]
-# hic_heatmap(data, dediag=0, ncols=1)
-# plt.show()
-# hicnn = hicnn
 
 
-data = [hicsr, real]
+data = [hicsr, fake]
 hic_heatmap(data, dediag=0, ncols=2)
 plt.show()
